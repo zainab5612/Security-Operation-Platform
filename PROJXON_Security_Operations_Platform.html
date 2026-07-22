@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>PROJXON Security Operations Platform</title>
+<style>
+:root{
+  --bg:#07111f; --panel:#0d1b2e; --panel2:#111f34; --line:#29415e;
+  --text:#f5f8fc; --dim:#a9b7ca; --cyan:#35d5ff; --blue:#4f8cff;
+  --green:#3ddc97; --yellow:#ffd166; --orange:#ff9f43; --red:#ff5d73;
+  --shadow:0 24px 80px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#020817;color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif;overflow:hidden}
+body{height:100vh}
+button{font:inherit}
+#deck{height:100vh;position:relative}
+.slide{
+  position:absolute;inset:0;display:none;overflow:auto;padding:54px 68px 76px;
+  background:
+    radial-gradient(circle at 85% 15%,rgba(53,213,255,.10),transparent 28%),
+    radial-gradient(circle at 8% 88%,rgba(79,140,255,.09),transparent 30%),
+    linear-gradient(145deg,#07111f 0%,#0a1424 58%,#07111f 100%);
+}
+.slide.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:.15;transform:translateY(8px)}to{opacity:1;transform:none}}
+.slide::before{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:42px 42px}
+.slide>*{position:relative;z-index:1}
+h1{font-size:clamp(42px,5.2vw,78px);line-height:1.03;margin:24px 0 18px;max-width:1050px}
+h2{font-size:clamp(19px,2vw,31px);line-height:1.35;color:#c8d5e6;max-width:1020px;font-weight:500}
+h3{font-size:clamp(30px,3.6vw,52px);margin:0 0 28px;letter-spacing:-.02em}
+h4{font-size:25px;margin:8px 0 10px}
+h5{font-size:19px;margin:0 0 12px}
+h6{font-size:16px;margin:0 0 10px}
+p,li,td,th,.main-message,.slide-footer-text{font-size:16px;line-height:1.52}
+ul{padding-left:22px}
+li{margin:7px 0}
+.title-slide{display:none;align-items:center}
+.title-slide.active{display:flex}
+.title-container{max-width:1120px}
+.badge,.badge-mini,.mockup-status-tag,.trigger-label,.event-badge,.rules-tag-cloud span{
+  display:inline-flex;align-items:center;border-radius:999px;padding:7px 12px;
+  font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase
+}
+.badge{background:rgba(53,213,255,.12);color:var(--cyan);border:1px solid rgba(53,213,255,.35)}
+.meta-footer{display:flex;gap:24px;margin-top:36px;color:var(--dim);font-size:13px}
+.background-effects,.data-stream,.central-hub-glow{position:absolute;inset:0}
+.central-hub-glow{background:radial-gradient(circle at 78% 48%,rgba(53,213,255,.24),transparent 18%)}
+.data-stream{opacity:.25;background:linear-gradient(90deg,transparent,rgba(53,213,255,.55),transparent);height:1px;top:28%}
+.stream-2{top:70%;transform:rotate(-7deg)}
+.main-message,.definition-block,.summary-conclusion-box,.scope-note-banner,.engine-logic-footer,.comparison-rule-summary,.recommendation-main-statement{
+  background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:18px;padding:18px 22px;color:#dce6f3
+}
+.grid-4-pillars,.focus-grid,.modules-grid-4,.scorecard-grid,.data-sources-grid,.executive-dashboard-grid,.value-cards-container-5{
+  display:grid;gap:16px
+}
+.grid-4-pillars,.focus-grid,.modules-grid-4{grid-template-columns:repeat(4,1fr)}
+.pillar-card,.focus-item,.module-block,.source-category-card,.kpi-box,.value-card-box,.problem-card,.score-metric-box,.score-breakdown-box,.scope-box,.anomaly-side-box,.comp-pane,.gov-pane,.capability-item,.roadmap-milestone,.dashboard-widget-box{
+  background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+  border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 8px 28px rgba(0,0,0,.16)
+}
+.pillar-icon,.value-icon,.avatar-placeholder{
+  width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--cyan),var(--blue));margin-bottom:14px
+}
+.pillar-card p,.focus-item p,.module-block p,.value-card-box p{color:var(--dim)}
+.ecosystem-container,.vision-diagram-container,.scope-columns-container,.rules-library-container,.anomaly-comparison-grid,.comparison-dual-columns,.governance-split-layout,.pilot-scope-layout,.ai-assistant-split-grid{
+  display:grid;grid-template-columns:1fr 90px 1fr;gap:18px;align-items:center
+}
+.source-group,.platform-core-box,.outer-inputs-ring,.ecosystem-silos{display:grid;gap:10px}
+.item-node,.silo-console,.ring-node,.pipe-node,.lifecycle-step,.tactic-box{
+  border:1px solid var(--line);background:rgba(255,255,255,.045);padding:13px 15px;border-radius:12px
+}
+.ecosystem-flow-arrows{display:grid;gap:46px}
+.arrow-manual::after{content:"→";font-size:34px;color:var(--orange)}
+.risk-cards-container{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.priority-high{border-top:3px solid var(--red)} .priority-medium{border-top:3px solid var(--orange)}
+.callout-quote,.finding-alert-box,.caution-callout,.timeline-conclusion,.automation-guardrail-banner,.pilot-objective-callout,.closing-banner{
+  margin-top:22px;padding:17px 20px;border-radius:15px;background:rgba(255,255,255,.035)
+}
+blockquote{margin:0;font-size:21px;line-height:1.45;color:#fff}
+table{width:100%;border-collapse:collapse;background:rgba(255,255,255,.025);border-radius:16px;overflow:hidden}
+th,td{padding:14px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#12243a;color:#dce9f8}
+.scorecard-grid{grid-template-columns:.8fr 1.2fr}
+.gauge-container{width:210px;height:110px;border:18px solid #23354a;border-bottom:0;border-radius:210px 210px 0 0;margin:10px auto 18px;position:relative}
+.gauge-container::before{content:"";position:absolute;inset:-18px -18px auto;height:110px;border:18px solid var(--cyan);border-bottom:0;border-radius:210px 210px 0 0;clip-path:polygon(0 0,74% 0,74% 100%,0 100%)}
+.score-value{position:absolute;left:0;right:0;bottom:-4px;text-align:center;font-size:58px;font-weight:800}
+.score-label{text-align:center;margin-top:94px;color:var(--dim)}
+.mini-bar-row{display:grid;grid-template-columns:130px 1fr 72px;gap:12px;align-items:center;margin:17px 0}
+.progress-bar-bg{height:11px;background:#26394d;border-radius:10px;overflow:hidden}
+.progress-fill{height:100%;border-radius:10px}
+.fill-red{background:var(--red)}.fill-orange{background:var(--orange)}.fill-yellow{background:var(--yellow)}.fill-green{background:var(--green)}
+.vision-diagram-container{grid-template-columns:1fr 1.35fr}
+.platform-core-box{padding:23px;border:1px solid rgba(53,213,255,.5);border-radius:22px;background:rgba(53,213,255,.06)}
+.core-capabilities-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.core-capabilities-grid span{padding:10px;border-radius:10px;background:#10253a;text-align:center;font-size:13px}
+.scope-columns-container,.rules-library-container,.anomaly-comparison-grid,.comparison-dual-columns,.governance-split-layout,.pilot-scope-layout,.ai-assistant-split-grid{grid-template-columns:1fr 1fr}
+.data-sources-grid{grid-template-columns:repeat(3,1fr)}
+.pipeline-horizontal-flow,.response-lifecycle-flow,.mitre-tactics-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pipe-node{flex:1;min-width:110px;text-align:center}
+.pipe-arrow,.lifecycle-arrow{color:var(--cyan);font-size:25px}
+.schema-code-block{font-family:Consolas,monospace;background:#050b14;border:1px solid #20364f;padding:16px;border-radius:14px;line-height:1.75}
+.rule-type-column{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:18px;padding:20px}
+.border-red{border:1px solid rgba(255,93,115,.65)!important}.border-orange{border:1px solid rgba(255,159,67,.65)!important}.border-yellow{border:1px solid rgba(255,209,102,.65)!important}.border-cyan{border:1px solid rgba(53,213,255,.65)!important}.border-green{border:1px solid rgba(61,220,151,.65)!important}
+.text-red{color:var(--red)}.text-orange{color:var(--orange)}.text-yellow{color:var(--yellow)}.text-cyan{color:var(--cyan)}.text-green{color:var(--green)}.text-dim{color:var(--dim)}.text-white{color:#fff}.text-black{color:#04101d}
+.bg-red{background:var(--red)}.bg-orange{background:var(--orange)}.bg-cyan{background:var(--cyan)}.bg-dark-blue{background:#0b2037}.bg-dark-charcoal{background:#101722}
+.bold-text{font-weight:800}.text-center{text-align:center}.text-small{font-size:14px}.text-mini-note{font-size:12px}
+.correlation-flow-box{text-align:center}
+.isolated-events-row{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+.badge-red{background:rgba(255,93,115,.16);color:var(--red);border:1px solid rgba(255,93,115,.4)}
+.badge-orange{background:rgba(255,159,67,.15);color:var(--orange);border:1px solid rgba(255,159,67,.4)}
+.badge-yellow{background:rgba(255,209,102,.15);color:var(--yellow);border:1px solid rgba(255,209,102,.4)}
+.down-arrow-large{font-size:42px;color:var(--cyan);margin:12px}
+.unified-incident-box{max-width:760px;margin:auto;padding:20px;border-radius:18px;background:rgba(255,93,115,.05)}
+.mockup-alert-window,.mockup-investigation-workspace,.user-profile-layout{
+  border:1px solid #365575;border-radius:18px;background:#08121f;overflow:hidden;box-shadow:var(--shadow)
+}
+.mockup-header-row,.profile-header-card{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;background:#102036}
+.mockup-details-grid,.profile-details-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px 20px}
+.mockup-triggers-box,.mockup-framework-box{margin:0 20px 16px;padding:15px;border-radius:13px;background:#0d1a2b}
+.trigger-label{margin:4px;background:rgba(53,213,255,.1);color:var(--cyan)}
+.mockup-investigation-workspace{display:grid;grid-template-columns:210px 1fr 230px}
+.workspace-left-rail,.workspace-center-timeline,.workspace-right-actions{padding:18px}
+.workspace-left-rail{background:#0d1b2e}.workspace-right-actions{background:#0a1625}
+.rail-item,.timeline-row-item{padding:10px;border-bottom:1px solid #20344c}.rail-item.active{color:var(--cyan)}
+.action-btn{display:block;width:100%;margin:10px 0;padding:11px;border-radius:10px;background:#142439;color:#fff;border:1px solid #39516f}
+.btn-red-outline{border-color:var(--red);color:#ffbbc4}
+.timeline-vertical-layout{display:grid;gap:13px}
+.timeline-card-node{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+.time-stamp{padding:11px;border-radius:10px;text-align:center;font-weight:800}
+.node-details{padding:14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.035)}
+.profile-header-card{justify-content:flex-start}.profile-risk-badge{margin-left:auto;padding:10px 14px;border-radius:999px}
+.avatar-placeholder{border-radius:50%;margin:0}
+.executive-dashboard-grid{grid-template-columns:repeat(3,1fr)}
+.kpi-box{display:flex;flex-direction:column;gap:8px}
+.kpi-big-value{font-size:42px;font-weight:900}
+.analyst-dashboard-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px}
+.queue-item{padding:13px;border-bottom:1px solid var(--line)}
+.metric-row-inline{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.tactic-box{flex:1;text-align:center;font-size:13px}.active-tactic{border-color:var(--cyan);color:var(--cyan);background:rgba(53,213,255,.07)}
+.containment-capabilities-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.nist-grid-6-functions{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.nist-function-card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:rgba(255,255,255,.03)}
+.nist-header{padding:12px;text-align:center;font-weight:900}
+.nist-function-card p{padding:0 14px 14px}
+.modules-grid-4{grid-template-columns:repeat(4,1fr)}
+.roadmap-timeline-container{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.roadmap-milestone{position:relative}.active-step{border-color:var(--cyan)}
+.rules-tag-cloud{display:flex;flex-wrap:wrap;gap:8px}.rules-tag-cloud span{background:#16283e;color:#d9e7f5}
+.value-cards-container-5{grid-template-columns:repeat(5,1fr)}
+.chat-row{padding:16px;border-bottom:1px solid var(--line)}
+.next-actions-checklist{max-width:900px;margin:20px auto}
+.clean-list-checklist{list-style:none;padding:0}.clean-list-checklist li{padding:10px 0}
+.checkbox-custom{display:inline-block;width:16px;height:16px;border:1px solid var(--cyan);border-radius:4px;margin-right:8px;vertical-align:-2px}
+.checkbox-custom.checked{background:var(--green)}
+.centered-message,.slide-footer-text,.mockup-caption-footer,.value-summary-statement,.governance-focus-statement{margin-top:18px}
+.bg-green{background:var(--green)}
+#chrome{position:fixed;inset:auto 0 0;z-index:100;display:flex;align-items:center;gap:10px;padding:10px 16px;background:linear-gradient(180deg,transparent,rgba(2,8,23,.96) 35%)}
+#chrome button{border:1px solid #31506f;background:#0d1b2e;color:#fff;border-radius:10px;padding:8px 12px;cursor:pointer}
+#chrome button:hover{border-color:var(--cyan)}
+#progress{height:4px;background:var(--cyan);position:fixed;top:0;left:0;z-index:120;transition:width .25s}
+#counter{margin-left:auto;color:var(--dim);font-size:13px}
+#notesPanel{position:fixed;right:18px;bottom:62px;z-index:110;width:min(430px,calc(100vw - 36px));max-height:38vh;overflow:auto;background:#07111f;border:1px solid #365575;border-radius:14px;padding:16px;box-shadow:var(--shadow);display:none}
+#notesPanel.show{display:block}
+#overview{position:fixed;inset:0;z-index:130;background:rgba(1,5,13,.96);padding:26px;overflow:auto;display:none}
+#overview.show{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.thumb{border:1px solid #2d4664;background:#0b1727;border-radius:14px;padding:16px;cursor:pointer;min-height:120px}
+.thumb:hover{border-color:var(--cyan)}
+.thumb .num{color:var(--cyan);font-size:12px}.thumb .ttl{font-weight:800;margin-top:8px}
+@media(max-width:900px){
+  .slide{padding:34px 24px 78px}
+  .grid-4-pillars,.focus-grid,.modules-grid-4,.data-sources-grid,.executive-dashboard-grid,.value-cards-container-5,.roadmap-timeline-container,.nist-grid-6-functions,.risk-cards-container{grid-template-columns:1fr 1fr}
+  .ecosystem-container{grid-template-columns:1fr}.ecosystem-flow-arrows{display:none}
+  .mockup-investigation-workspace{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .grid-4-pillars,.focus-grid,.modules-grid-4,.data-sources-grid,.executive-dashboard-grid,.value-cards-container-5,.roadmap-timeline-container,.nist-grid-6-functions,.risk-cards-container,.scope-columns-container,.rules-library-container,.anomaly-comparison-grid,.comparison-dual-columns,.governance-split-layout,.pilot-scope-layout,.ai-assistant-split-grid,.scorecard-grid,.analyst-dashboard-grid,.profile-details-grid,.containment-capabilities-grid{grid-template-columns:1fr}
+  h3{font-size:30px}
+}
+@media print{
+  html,body{overflow:visible;background:#fff}
+  #chrome,#progress,#notesPanel,#overview{display:none!important}
+  .slide{position:relative;display:block!important;width:13.333in;height:7.5in;page-break-after:always;overflow:hidden;padding:.45in .6in}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<main id="deck"><section class="slide title-slide dark-theme" data-index="1" data-note="Good morning, everyone. Today I am presenting my executive proposal for the PROJXON Security Operations Platform. This strategy transitions me from manual security checks to centralized, real-time intelligence tailored to support my remote team and interns.">
+<div class="background-effects">
+<div class="data-stream stream-1"></div>
+<div class="data-stream stream-2"></div>
+<div class="central-hub-glow"></div>
+</div>
+<div class="title-container">
+<span class="badge">EXECUTIVE PROPOSAL</span>
+<h1>PROJXON Security Operations Platform</h1>
+<h2>A Centralized SIEM and Cybersecurity Operations Platform for Google Workspace, SaaS, Identity, and Cloud Security</h2>
+<div class="meta-footer">
+<span class="version">Strategic Initiative 2026</span>
+<span class="confidentiality">PROJXON CONFIDENTIAL</span>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">1</div></section><section class="slide content-slide dark-theme" data-index="2" data-note="I want to explain the product first before I explain the problems. This is a focused SIEM layer for PROJXON. It connects Google Workspace, Orkavault, SaaS, AWS where available, and Gemini Workspace activity logs where available. It connects security activity into one investigation workflow.">
+<h3>What the Platform Is</h3>
+<div class="definition-block">
+<h5>Platform Blueprint: Focused SIEM</h5>
+<p>A focused SIEM collects security logs from separate systems, standardizes them, detects suspicious behavior, correlates related activity, calculates risk, and gives analysts one place to investigate and document incidents.</p>
+</div>
+<div class="focus-areas-container">
+<h5>PROJXON-Specific Operational Focus</h5>
+<div class="focus-grid">
+<div class="focus-item">
+<h6>Google Workspace-First</h6>
+<p>Built directly around our primary collaboration environment.</p>
+</div>
+<div class="focus-item">
+<h6>SaaS &amp; OAuth Centric</h6>
+<p>Monitors permissions granted to third-party business software.</p>
+</div>
+<div class="focus-item">
+<h6>Identity Governance</h6>
+<p>Tracks standard, administrative, and shared accounts explicitly.</p>
+</div>
+<div class="focus-item">
+<h6>Tailored Lifecycle Management</h6>
+<p>Designed to watch over onboarding, role movements, and rapid intern offboarding.</p>
+</div>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">2</div></section>
+<section class="slide content-slide dark-theme" data-index="3" data-note="my main challenge is that our security information is scattered across completely separate systems. As we take on more interns and scale our operations, tracking access manually leaves us exposed to undetected risks.">
+<h3>Executive Summary</h3>
+<div class="main-message">
+    PROJXON operates in a modern, highly distributed environment. As our workforce scales, tracking access and identifying threats across fragmented platforms creates a visibility gap.
+  </div>
+<div class="grid-4-pillars">
+<div class="pillar-card">
+<div class="pillar-icon visibility-icon"></div>
+<h4>Centralized Visibility</h4>
+<p>Consolidating isolated system logs into a single operational interface.</p>
+</div>
+<div class="pillar-card">
+<div class="pillar-icon detection-icon"></div>
+<h4>Threat Detection</h4>
+<p>Enhancing native alerts with cross-system detection and correlation.</p>
+</div>
+<div class="pillar-card">
+<div class="pillar-icon investigation-icon"></div>
+<h4>Analyst Investigations</h4>
+<p>Providing interactive, chronological timelines to trace root causes fast.</p>
+</div>
+<div class="pillar-card">
+<div class="pillar-icon compliance-icon"></div>
+<h4>Governance &amp; Compliance</h4>
+<p>Creating continuous audit records for configurations and user lifecycles.</p>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">3</div></section>
+<section class="slide content-slide dark-theme" data-index="4" data-note="This diagram displays the current business environment. Google Workspace, Gemini, AWS, Orkavault, and other applications each provide their own visibility, but we still need one place to connect the security story across systems.">
+<h3>Current Business Environment</h3>
+<div class="ecosystem-container">
+<div class="ecosystem-sources">
+<div class="source-group">
+<h5>Identity &amp; Collaboration</h5>
+<div class="item-node">Google Workspace (Gmail, Drive, Groups)</div>
+<div class="item-node">OAuth-Connected Applications</div>
+</div>
+<div class="source-group">
+<h5>Infrastructure &amp; Access</h5>
+<div class="item-node">Orkavault (Shared Credentials)</div>
+<div class="item-node">AWS Cloud Environments</div>
+</div>
+<div class="source-group">
+<h5>Workforce &amp; Devices</h5>
+<div class="item-node">Distributed Employees &amp; Intern Devices</div>
+<div class="item-node">HR Onboarding/Offboarding Logs</div>
+</div>
+</div>
+<div class="ecosystem-flow-arrows">
+<div class="arrow-manual"></div>
+<div class="arrow-manual"></div>
+<div class="arrow-manual"></div>
+</div>
+<div class="ecosystem-silos">
+<div class="silo-console alert-orange">Google Admin Console</div>
+<div class="silo-console alert-orange">Orkavault Log View</div>
+<div class="silo-console alert-orange">AWS CloudTrail Console</div>
+<div class="silo-console alert-orange">Manual Spreadsheets</div>
+</div>
+</div>
+<div class="slide-footer-text">
+    Each system operates in its own silo, requiring separate administration and manual correlation.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">4</div></section>
+<section class="slide content-slide dark-theme" data-index="5" data-note="Important correction: Google Workspace does provide native automated alerts.However, The gap I am addressing is SIEM-style cross-system correlation, risk scoring, and investigation workflow across Google Workspace, Gemini activity, Orkavault, AWS, and SaaS activity.">
+<h3>Current Security Challenges</h3>
+<div class="risk-cards-container">
+<div class="problem-card priority-high">
+<h5>Identity &amp; Tracking Sprawl</h5>
+<ul>
+<li>Shared corporate accounts obscure individual user attribution.</li>
+<li>High intern and team turnover strains manual access tracking.</li>
+<li>Permissions are often excessive or inconsistent across groups.</li>
+</ul>
+</div>
+<div class="problem-card priority-high">
+<h5>Visibility Blindspots</h5>
+<ul>
+<li>Connected OAuth applications operate without central governance.</li>
+<li>AWS resources lack integration into core security workflows.</li>
+<li>Changes to critical security configurations are reviewed manually.</li>
+</ul>
+</div>
+<div class="problem-card priority-medium">
+<h5>Response Bottlenecks</h5>
+<ul>
+<li>Forensic investigations require digging through separate systems by hand.</li>
+<li>Password modifications trigger access disruptions without context.</li>
+<li>Native alerts exist, but cross-system SIEM correlation is limited.</li>
+</ul>
+</div>
+</div>
+<div class="callout-quote card-accent-red">
+<blockquote>"The organization has security data, but it does not yet have one place to understand the complete security story."</blockquote>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">5</div></section>
+<section class="slide content-slide dark-theme" data-index="6" data-note="These tools are useful and should stay in place. Google Workspace has native alerts, Orkavault has credential auditing, and AWS has its own logs. The platform I am proposing adds the analyst layer above them: one place to correlate events, investigate, document findings, and show executive visibility.">
+<h3>Why Existing Tools Are Not Enough</h3>
+<table class="comparison-table">
+<thead>
+<tr>
+<th style="width: 25%;">Current Tool</th>
+<th style="width: 45%;">Security Capability Provided</th>
+<th style="width: 30%;">Critical Operations Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="bold-text">Google Workspace Admin</td>
+<td>Provides internal logs and administrative settings.</td>
+<td class="text-orange">Limited cross-system investigation workflow across external SaaS, Orkavault, Gemini activity, and cloud activity.</td>
+</tr>
+<tr>
+<td class="bold-text">Orkavault</td>
+<td>Protects credentials and audits password access.</td>
+<td class="text-orange">Provides credential auditing, but not full SIEM correlation, investigation, and incident workflow.</td>
+</tr>
+<tr>
+<td class="bold-text">AWS CloudTrail</td>
+<td>Logs infrastructure actions within our cloud perimeter.</td>
+<td class="text-orange">Isolated from Google Workspace identity contexts.</td>
+</tr>
+<tr>
+<td class="bold-text">Manual Spreadsheets</td>
+<td>Tracks onboarding timelines and access approvals.</td>
+<td class="text-orange">Useful for tracking, but not designed for real-time detection, correlation, or investigation.</td>
+</tr>
+</tbody>
+</table>
+<div class="summary-conclusion-box">
+<strong>Strategic Conclusion:</strong> The platform integrates existing investments; it does not replace them.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">6</div></section>
+<section class="slide content-slide dark-theme" data-index="7" data-note="The overall security score comes from the Workspace assessment used as a planning input in the project blueprint: 74 out of 100 overall, with lower scores around Accounts and Configurations. I present this as a baseline to validate, not as a final audit result. The point is that native Google controls exist, but the organization can strengthen posture through centralized monitoring and correlation.">
+<h3>The Hard Truth: Workspace Security Scorecard</h3>
+<div class="scorecard-grid">
+<div class="score-metric-box">
+<div class="gauge-container">
+<div class="score-value">74</div>
+<div class="score-label">of 100</div>
+</div>
+<h4>Overall Security Score</h4>
+<p class="text-yellow">Moderate risk management maturity across the workspace ecosystem.</p>
+</div>
+<div class="score-breakdown-box">
+<h5>Component Breakdown</h5>
+<div class="mini-bar-row">
+<span>Configurations</span>
+<div class="progress-bar-bg"><div class="progress-fill fill-red" style="width: 50%;"></div></div>
+<span class="bold-text text-red">50/100</span>
+</div>
+<div class="mini-bar-row">
+<span>Accounts</span>
+<div class="progress-bar-bg"><div class="progress-fill fill-orange" style="width: 68%;"></div></div>
+<span class="bold-text text-orange">68/100</span>
+</div>
+<div class="mini-bar-row">
+<span>Email Security</span>
+<div class="progress-bar-bg"><div class="progress-fill fill-yellow" style="width: 80%;"></div></div>
+<span class="bold-text text-yellow">80/100</span>
+</div>
+<div class="mini-bar-row">
+<span>Drive Governance</span>
+<div class="progress-bar-bg"><div class="progress-fill fill-green" style="width: 100%;"></div></div>
+<span class="bold-text text-green">100/100</span>
+</div>
+</div>
+</div>
+<div class="finding-alert-box text-orange border-orange">
+<strong>Key Scorecard Recommendation:</strong> Native alerts and manual reviews provide partial visibility. A SIEM hub strengthens monitoring by connecting activity across Google Workspace, Orkavault, Gemini activity, AWS, and SaaS systems.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">7</div></section>
+<section class="slide content-slide dark-theme" data-index="8" data-note="Here is the vision. The existing platforms remain in place, but their security activity feeds into one SIEM layer for detection, correlation, investigation, and executive reporting.">
+<h3>The Vision</h3>
+<div class="vision-diagram-container">
+<div class="outer-inputs-ring">
+<div class="ring-node">Google Workspace</div>
+<div class="ring-node">Orkavault</div>
+<div class="ring-node">AWS Infrastructure</div>
+<div class="ring-node">SaaS Applications</div>
+<div class="ring-node">User Devices</div>
+<div class="ring-node">HR Access Feeds</div>
+</div>
+<div class="platform-core-box">
+<h4>PROJXON Security Operations Platform</h4>
+<div class="core-capabilities-grid">
+<span>Log Collection</span>
+<span>Normalization</span>
+<span>Threat Detection</span>
+<span>Correlation</span>
+<span>Risk Scoring</span>
+<span>Alerting Queue</span>
+<span>Investigations</span>
+<span>Compliance Logs</span>
+<span>Incident Playbooks</span>
+</div>
+</div>
+</div>
+<div class="centered-message bold-text text-cyan">
+    One platform for understanding security activity across the organization.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">8</div></section>
+<section class="slide content-slide dark-theme" data-index="9" data-note="This slide highlights the project boundaries. I am focusing on protecting our active identities and log files. Replacing production apps or building full containment automation is out of scope for phase one.">
+<h3>Project Scope Boundaries</h3>
+<div class="scope-columns-container">
+<div class="scope-box box-in-scope">
+<h4 class="text-green">In Scope</h4>
+<ul>
+<li>Centralizing Google Workspace audit trails and log files.</li>
+<li>Tracking SaaS permissions and third-party OAuth application state.</li>
+<li>Monitoring user identity permissions, group privileges, and access vectors.</li>
+<li>Enforcing visibility over employee/intern onboarding and offboarding metrics.</li>
+<li>Building behavioral alert rules, timeline engines, and compliance dashboards.</li>
+</ul>
+</div>
+<div class="scope-box box-out-scope">
+<h4 class="text-red">Initially Out of Scope</h4>
+<ul>
+<li>Replacing Google Workspace, AWS, or Orkavault infrastructure.</li>
+<li>Deploying endpoint response agents (EDR) unless endpoint telemetry is integrated later.</li>
+<li>Rebuilding corporate application suites.</li>
+<li>Executing fully automated account containment without explicit analyst confirmation.</li>
+</ul>
+</div>
+</div>
+<div class="scope-note-banner">
+    The platform functions as a security fabric over our environment, requiring zero software replacements.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">9</div></section>
+<section class="slide content-slide dark-theme" data-index="10" data-note="These are the primary security data sources I plan to use during the pilot. Google Workspace will provide authentication, administrative, and audit logs, while Orkavault adds credential and privileged access activity. AWS and other SaaS applications can be integrated as the company grows. Since PROJXON also uses Gemini throughout Google Workspace, its audit events can provide additional visibility where available. My goal is to centralize these existing data sources into one platform so investigations are faster and security events can be correlated across systems."
+.">
+<h3>Validated Platform Data Sources</h3>
+<div class="data-sources-grid">
+<div class="source-category-card">
+<h5>Google Workspace Streams</h5>
+<ul class="clean-list text-dim text-small">
+<li><strong class="text-white">Login Audits:</strong> Sign-in metrics, locations, status.</li>
+<li><strong class="text-white">Admin Audits:</strong> Core configuration changes, group edits.</li>
+<li><strong class="text-white">Drive Audits:</strong> File sharing state, public download events.</li>
+<li><strong class="text-white">OAuth Logs:</strong> Third-party application link requests.</li>
+<li><strong class="text-white">Gemini Activity:</strong> AI usage and related audit events available in Google Workspace Admin logs where visibility is permitted.</li></ul>
+</div>
+<div class="source-category-card">
+<h5>Orkavault Telemetry</h5>
+<ul class="clean-list text-dim text-small">
+<li><strong class="text-white">Authentication:</strong> Platform access events, device metrics.</li>
+<li><strong class="text-white">Credential Audits:</strong> Password views, modifications.</li>
+<li><strong class="text-white">Privilege Changes:</strong> Vault folder access changes.</li>
+<li><strong class="text-white">MFA Logs:</strong> Multi-factor verification success/failure.</li>
+</ul>
+</div>
+<div class="source-category-card">
+<h5>Cloud &amp; Infrastructure Feeds</h5>
+<ul class="clean-list text-dim text-small">
+<li><strong class="text-white">AWS Access Logs:</strong> Cloud admin logins, session updates.</li>
+<li><strong class="text-white">SaaS Audit Trails:</strong> Connected application session metrics.</li>
+<li><strong class="text-white">HR Context Feeds:</strong> Start dates, scheduled departures, role flags.</li>
+</ul>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">10</div></section>
+<section class="slide content-slide dark-theme" data-index="11" data-note="This pipeline shows how security events move through the platform. Sources: where events originate. Log APIs: collect audit logs from connected systems. Parsing: extract important fields. Normalization: convert different log formats into one standard structure. Data Store: save normalized events. Detections: apply security rules. Correlation: connect related events into one incident. Alerting Queue: present prioritized alerts to analysts.">
+<h3>The Technical Data Pipeline</h3>
+<div class="pipeline-horizontal-flow">
+<div class="pipe-node">Sources</div>
+<div class="pipe-arrow">→</div>
+<div class="pipe-node">Log APIs</div>
+<div class="pipe-arrow">→</div>
+<div class="pipe-node">Parsing</div>
+<div class="pipe-arrow">→</div>
+<div class="pipe-node">Normalization</div>
+<div class="pipe-arrow">→</div>
+<div class="pipe-node">Data Store</div>
+<div class="pipe-arrow">→</div>
+<div class="pipe-node">Detections</div>
+<div class="pipe-arrow">→</div>
+<div class="pipe-node">Correlation</div>
+<div class="pipe-arrow">→</div>
+<div class="pipe-node">Alerting Queue</div>
+</div>
+<div class="normalization-example-container">
+<h5>Log Event Normalization Example</h5>
+<p class="text-dim text-small">Raw system data formats vary wildly. The platform standardizes every log entry into a predictable schema:</p>
+<div class="schema-code-block text-small">
+<span><strong>Timestamp:</strong> 2026-07-19 14:22:05 UTC</span> | 
+      <span><strong>User:</strong> intern.user@projxon.com</span> | 
+      <span><strong>System:</strong> Google Workspace</span> <br/>
+<span><strong>Action:</strong> OAuth Grant</span> | 
+      <span><strong>Resource:</strong> SyncTool_v2</span> | 
+      <span><strong>IP Address:</strong> 198.51.100.45</span> | 
+      <span><strong>Risk Level:</strong> High</span>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">11</div></section>
+<section class="slide content-slide dark-theme" data-index="12" data-note="Detections: flag repeated failures, new locations, MFA changes, privilege changes, risky OAuth grants, Drive sharing, Gmail forwarding, DLP events, Gemini activity where available, and Orkavault access. Machine learning can come later after enough normal activity is collected to build a baseline.">
+<h3>The Threat Detection Engine</h3>
+<div class="rules-library-container">
+<div class="rule-type-column border-orange">
+<h5 class="text-orange">Identity &amp; Access Detections</h5>
+<ul class="text-small">
+<li>Repeated sign-in failures followed by success.</li>
+<li>Sign-ins originating from unusual locations ("Impossible Travel").</li>
+<li>Multi-factor authentication (MFA) changes or disabling actions.</li>
+<li>Privilege escalations (New Super Admin assignments).</li>
+</ul>
+</div>
+<div class="rule-type-column border-yellow">
+<h5 class="text-yellow">SaaS &amp; Data Exfiltration Detections</h5>
+<ul class="text-small">
+<li>Unapproved third-party OAuth applications requesting sensitive scopes.</li>
+<li>Massive document downloads from Google Drive.</li>
+<li>Internal folders updated to allow public external sharing links.</li>
+<li>New external auto-forwarding rules created inside Gmail accounts.</li>
+</ul>
+</div>
+</div>
+<div class="engine-logic-footer">
+    Rules mature across four methods: <strong>Threshold-Based logic</strong>, <strong>Behavioral Baselines</strong>, <strong>Machine-Learning-Assisted Anomaly Detection</strong>, and <strong>Cross-System Correlation</strong>.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">12</div></section>
+<section class="slide content-slide dark-theme" data-index="13" data-note=” machine learning probably won’t be active on day one. First, I need clean logs and normal baseline behavior. After that, ML-assisted anomaly detection can help find unusual login times, file downloads, OAuth grants, Gemini activity, or Orkavault access. An anomaly is only a lead; I still validate it as the analyst.">
+<h3>Anomaly Detection Defended</h3>
+<div class="anomaly-comparison-grid">
+<div class="anomaly-side-box bg-dark-blue">
+<h5 class="text-cyan">Established Baseline Patterns</h5>
+<p class="text-dim text-small">The core engine analyzes daily system usage to record normal operational bounds:</p>
+<ul class="text-small">
+<li>Standard operational business hours by department.</li>
+<li>Recognized corporate and personal hardware devices.</li>
+<li>Expected data download thresholds per worker profile.</li>
+<li>Common administrative system change patterns.</li>
+</ul>
+</div>
+<div class="anomaly-side-box bg-dark-charcoal">
+<h5 class="text-orange">Identified Behavioral Anomalies</h5>
+<p class="text-dim text-small">The platform raises an investigation lead when activity deviates from the baseline:</p>
+<ul class="text-small">
+<li>User signs into accounts at 03:00 AM local time.</li>
+<li>An analyst pulls down 10x their standard daily file volume.</li>
+<li>A manager updates sensitive permissions outside regular cycles.</li>
+<li>Access attempts hit systems via completely unmapped browsers.</li>
+</ul>
+</div>
+</div>
+<div class="caution-callout border-yellow text-yellow">
+<strong>Operational Rule:</strong> Anomaly detection highlights behavioral shifts. It serves as an investigative lead, not a definitive confirmation of compromise.
+  </div><div class="caution-callout border-cyan text-cyan text-small"><strong>Machine learning layer:</strong> After enough baseline data is collected, ML-assisted detection can help identify unusual login times, abnormal file downloads, abnormal OAuth grants, and unusual Orkavault access patterns.</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">13</div></section>
+<section class="slide content-slide dark-theme" data-index="14" data-note="Correlation is what keeps the security team efficient. Instead of throwing six separate alerts at analysts, it links them into one cohesive incident timeline.">
+<h3>The Power of Event Correlation</h3>
+<div class="correlation-flow-box">
+<div class="isolated-events-row text-small">
+<span class="event-badge badge-red">15 Failed Logins</span>
+<span class="event-badge badge-orange">New Location Login</span>
+<span class="event-badge badge-orange">MFA Recovery Update</span>
+<span class="event-badge badge-yellow">OAuth Grant</span>
+<span class="event-badge badge-red">Mass Drive Download</span>
+<span class="event-badge badge-orange">Orkavault Access</span>
+</div>
+<div class="down-arrow-large">↓</div>
+<div class="unified-incident-box border-red">
+<h4 class="text-red">Single Correlated Incident Case</h4>
+<p class="bold-text">Flagged Objective: Potential Account Takeover with Data Exfiltration Activity</p>
+<p class="text-dim text-small">Six raw alerts are automatically merged into one incident layout, eliminating alert fatigue and giving the analyst immediate context.</p>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">14</div></section>
+<section class="slide content-slide dark-theme" data-index="15" data-note="This alert screen shows what an analyst would review first: who is affected, what triggered the alert, when it happened, and which related behaviors raised the risk score. The risk score is not CVSS; it is a platform behavior score based on suspicious activity such as failed logins, new location, risky OAuth, Drive activity, and Orkavault access.">
+<h3>Mockup: Security Alert Interface</h3>
+<div class="mockup-alert-window">
+<div class="mockup-header-row">
+<span class="mockup-title bold-text">ALERT #2026-8941: Possible Workspace Account Compromise</span>
+<span class="mockup-status-tag bg-red">Severity: Critical</span>
+</div>
+<div class="mockup-details-grid text-small">
+<div><strong>Target User:</strong> alex.boreman.projxon@gmail.com</div>
+<div><strong>Platform Risk Score:</strong> <span class="text-red bold-text">94 / 100</span></div>
+<div><strong>Detection Time:</strong> 10:42 AM UTC</div>
+<div><strong>Current Case State:</strong> New / Unassigned</div>
+</div>
+<div class="mockup-triggers-box text-small">
+<h6>Triggered Correlation Rules:</h6>
+<span class="trigger-label">Repeated Authentication Failures</span>
+<span class="trigger-label">Sign-in from New Geo Location</span>
+<span class="trigger-label">Unapproved OAuth Token Granted</span>
+<span class="trigger-label">High Drive Exfiltration Volume</span>
+</div>
+<div class="mockup-framework-box text-small">
+<h6>Mapped Attacker Vectors (MITRE ATT&amp;CK Guidance):</h6>
+<span><strong>T1078 (Valid Accounts)</strong></span> | 
+      <span><strong>T1098 (Account Manipulation)</strong></span> | 
+      <span><strong>T1530 (Cloud Storage Data Extraction)</strong></span>
+</div>
+</div>
+<div class="mockup-caption-footer text-dim text-small">
+    * Illustrative demonstration data format.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">15</div></section>
+<section class="slide content-slide dark-theme" data-index="16" data-note="This mockup shows the analyst investigation console. It balances granular detail with clean visual sections, splitting metadata, timelines, and response tools into a single workspace.">
+<h3>Mockup: Analyst Investigation Console</h3>
+<div class="mockup-investigation-workspace">
+<div class="workspace-left-rail text-small">
+<h6>Alert Profile</h6>
+<div class="rail-item active">Case #2026-8941</div>
+<div class="rail-item">Risk Index: 94/100</div>
+<div class="rail-item">Impact: High Data Risk</div>
+</div>
+<div class="workspace-center-timeline text-small">
+<h6>Interactive Activity Timeline</h6>
+<div class="timeline-row-item"><span class="text-cyan">10:31 AM</span> 12 failed authentication attempts noted.</div>
+<div class="timeline-row-item"><span class="text-cyan">10:36 AM</span> Successful login confirmed via unfamiliar remote IP.</div>
+<div class="timeline-row-item"><span class="text-cyan">10:41 AM</span> Account recovery phone number modified.</div>
+<div class="timeline-row-item"><span class="text-cyan">10:44 AM</span> 320 independent file assets downloaded from corporate Drive.</div>
+</div>
+<div class="workspace-right-actions text-small">
+<h6>Containment Panel</h6>
+<button class="action-btn btn-red-outline">Revoke User Sessions</button>
+<button class="action-btn btn-red-outline">Suspend Account Access</button>
+<button class="action-btn btn-gray">Escalate Incident Case</button>
+</div>
+</div>
+<div class="mockup-caption-footer text-dim text-small">
+    * Illustrative user interface framework concept.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">16</div></section>
+<section class="slide content-slide dark-theme" data-index="17" data-note="This timeline slide models a real investigation sequence. By looking at these points chronologically, the analyst can easily spot the transition from initial access to data theft.">
+<h3>Investigation Timeline Case Study</h3>
+<div class="timeline-vertical-layout text-small">
+<div class="timeline-card-node">
+<div class="time-stamp bg-cyan text-black">10:31 AM</div>
+<div class="node-details"><strong>Initial Vector:</strong> 12 failed Google Workspace password attempts logged within a tight window.</div>
+</div>
+<div class="timeline-card-node">
+<div class="time-stamp bg-cyan text-black">10:36 AM</div>
+<div class="node-details"><strong>Access Gained:</strong> Single successful sign-in registered from an unmapped remote IP location.</div>
+</div>
+<div class="timeline-card-node">
+<div class="time-stamp bg-cyan text-black">10:41 AM</div>
+<div class="node-details"><strong>Persistence Built:</strong> Security parameters updated; MFA recovery configuration details changed.</div>
+</div>
+<div class="timeline-card-node">
+<div class="time-stamp bg-cyan text-black">10:44 AM</div>
+<div class="node-details"><strong>Exfiltration:</strong> 320 distinct files downloaded out of Google Drive folders in rapid succession.</div>
+</div>
+</div>
+<div class="timeline-conclusion text-orange border-orange text-small">
+<strong>Analyst Case Assessment Conclusion:</strong> This correlated chain indicates a clear account takeover followed immediately by credential mapping, data gathering, and system access expansion.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">17</div></section>
+<section class="slide content-slide dark-theme" data-index="18" data-note="I also build 360-degree security profiles for my users. This view helps my team evaluate a user's total risk score based on their recent privileges, locations, and open alerts.">
+<h3>Mockup: User 360-Degree Security Profile</h3>
+<div class="user-profile-layout">
+<div class="profile-header-card">
+<div class="avatar-placeholder"></div>
+<div>
+<h4>Alex Boreman</h4>
+<p class="text-dim text-small">Department: Marketing Ops | Supervisor: Operations Manager</p>
+</div>
+<div class="profile-risk-badge bg-orange text-white">Risk Index: 72/100</div>
+</div>
+<div class="profile-details-grid text-small">
+<div class="details-column">
+<h6>Identity Governance Parameters</h6>
+<div><strong>Workspace Privileges:</strong> Standard Account User</div>
+<div><strong>MFA Posture:</strong> Active (SMS-Based Verification)</div>
+<div><strong>Active SaaS Integrations:</strong> 6 Authorized Apps</div>
+</div>
+<div class="details-column">
+<h6>Operational Footprint Metrics</h6>
+<div><strong>Primary Devices:</strong> 1 Managed Laptop, 1 BYOD Device</div>
+<div><strong>Common Geographies:</strong> California, US</div>
+<div><strong>Open Platform Investigations:</strong> 1 Case Pending Review</div>
+</div>
+</div>
+</div>
+<div class="mockup-caption-footer text-dim text-small">
+    * Illustrative user identity card mockup interface.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">18</div></section>
+<section class="slide content-slide dark-theme" data-index="19" data-note="This dashboard is for leadership, so I would not show raw logs here. I would show posture, trends, open risks, high-risk users, unapproved OAuth apps, DLP events, response time, and NIST progress. The numbers shown are illustrative; in the real pilot I would label them as baseline, target, or measured result.">
+<h3>Mockup: Executive KPI Dashboard</h3>
+<div class="executive-dashboard-grid">
+<div class="kpi-box border-green">
+<span class="kpi-title text-dim">Security Health Index</span>
+<span class="kpi-big-value text-green">88%</span>
+<span class="kpi-trend text-green">↑ 4% vs baseline</span>
+</div>
+<div class="kpi-box border-red">
+<span class="kpi-title text-dim">Critical Open Incidents</span>
+<span class="kpi-big-value text-red">0</span>
+<span class="kpi-trend text-dim">Stable status</span>
+</div>
+<div class="kpi-box border-yellow">
+<span class="kpi-title text-dim">High-Risk Accounts</span>
+<span class="kpi-big-value text-yellow">2</span>
+<span class="kpi-trend text-yellow">Requires active review</span>
+</div>
+<div class="kpi-box border-cyan">
+<span class="kpi-title text-dim">Overall MFA Adoption</span>
+<span class="kpi-big-value text-cyan">100%</span>
+<span class="kpi-trend text-green">Full coverage met</span>
+</div>
+<div class="kpi-box border-orange">
+<span class="kpi-title text-dim">Unapproved SaaS Apps</span>
+<span class="kpi-big-value text-orange">5</span>
+<span class="kpi-trend text-red">↑ 2 brand new links</span>
+</div>
+<div class="kpi-box border-cyan">
+<span class="kpi-title text-dim">Mean Time to Resolve</span>
+<span class="kpi-big-value text-cyan">24m</span>
+<span class="kpi-trend text-green">↓ 12m improvement</span>
+</div>
+</div>
+<div class="mockup-caption-footer text-dim text-small">
+    * Illustrative metrics intended for high-level management health reporting displays.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">19</div></section>
+<section class="slide content-slide dark-theme" data-index="20" data-note="In contrast, this is the interface our technical team relies on. It features a visible investigation queue sorted by priority, alongside mean-time-to-resolution trackers.">
+<h3>Mockup: SOC Analyst Operations View</h3>
+<div class="analyst-dashboard-grid text-small">
+<div class="dashboard-widget-box queue-widget">
+<h6>Active Investigation Ticket Queue</h6>
+<div class="queue-item status-critical"><strong>Case #2026-8941</strong> - Workspace Compromise <span class="badge-mini bg-red">Critical</span></div>
+<div class="queue-item status-high"><strong>Case #2026-8912</strong> - Privilege Escalation Detect <span class="badge-mini bg-orange">High</span></div>
+<div class="queue-item status-medium"><strong>Case #2026-8804</strong> - External Drive Share Alert <span class="badge-mini bg-yellow">Medium</span></div>
+</div>
+<div class="dashboard-widget-box summary-metrics-widget">
+<h6>Incident Volume Distribution</h6>
+<div class="metric-row-inline"><span>Critical Priority Events:</span> <span class="text-red bold-text">1</span></div>
+<div class="metric-row-inline"><span>High Priority Events:</span> <span class="text-orange bold-text">4</span></div>
+<div class="metric-row-inline"><span>Medium Priority Events:</span> <span class="text-yellow bold-text">12</span></div>
+<div class="metric-row-inline"><span>Low Ingestion Warnings:</span> <span class="text-cyan bold-text">144</span></div>
+</div>
+</div>
+<div class="mockup-caption-footer text-dim text-small">
+    * Illustrative display concept built for everyday operational security monitoring functions.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">20</div></section>
+<section class="slide content-slide dark-theme" data-index="21" data-note="MITRE ATT&amp;CK is a public knowledge base that organizes real attacker behavior into tactics and techniques. I use MITRE so alerts are not just random names; they map to attacker behavior such as valid accounts, account manipulation, application token abuse, and cloud data collection.">
+<h3>Industry Framework: MITRE ATT&amp;CK Mapping</h3>
+<div class="mitre-tactics-row text-small">
+<div class="tactic-box active-tactic">Initial Access</div>
+<div class="tactic-box active-tactic">Persistence</div>
+<div class="tactic-box active-tactic">Privilege Escalation</div>
+<div class="tactic-box active-tactic">Credential Access</div>
+<div class="tactic-box">Discovery</div>
+<div class="tactic-box active-tactic">Collection</div>
+<div class="tactic-box active-tactic">Exfiltration</div>
+</div>
+<div class="mitre-mapping-examples text-small">
+<h5>Platform Detection Rules Real-World Mapping</h5>
+<table class="minimal-table">
+<thead>
+<tr>
+<th>Observed Action</th>
+<th>MITRE ATT&amp;CK Technique Mapping Designation</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Repeated authentication failures across user accounts.</td><td><strong>T1110 - Brute Force Hacking Attempts</strong></td></tr>
+<tr><td>User accounts updated with elevated Super Admin rules.</td><td><strong>T1098 - Privileged Account Manipulation</strong></td></tr>
+<tr><td>Third-party OAuth tokens authorized by a remote user.</td><td><strong>T1528 - Application Access Token Theft</strong></td></tr>
+<tr><td>Massive document extraction execution from corporate Drive folders.</td><td><strong>T1530 - Cloud Storage Data Harvesting</strong></td></tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer-text text-dim text-mini-note">
+    * Source reference guidance: MITRE ATT&amp;CK standard definitions matrix.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">21</div></section>
+<section class="slide content-slide dark-theme" data-index="22" data-note="When an incident triggers, my team follows this clear response loop. Automation is rolled out carefully; all initial account containment actions require explicit manager approval during the pilot phase.">
+<h3>Coordinated Incident Response Workflow</h3>
+<div class="response-lifecycle-flow">
+<div class="lifecycle-step bg-red text-white">Detect</div>
+<div class="lifecycle-arrow">→</div>
+<div class="lifecycle-step">Validate</div>
+<div class="lifecycle-arrow">→</div>
+<div class="lifecycle-step">Prioritize</div>
+<div class="lifecycle-arrow">→</div>
+<div class="lifecycle-step">Investigate</div>
+<div class="lifecycle-arrow">→</div>
+<div class="lifecycle-step bg-orange text-white">Contain</div>
+<div class="lifecycle-arrow">→</div>
+<div class="lifecycle-step">Recover</div>
+<div class="lifecycle-arrow">→</div>
+<div class="lifecycle-step">Document</div>
+</div>
+<div class="containment-capabilities-grid text-small">
+<div class="capability-item border-red">
+<h6>Immediate Identity Actions</h6>
+<p class="text-dim">Revoking active user sessions, resetting passwords, and enforcing temporary account suspension locks.</p>
+</div>
+<div class="capability-item border-orange">
+<h6>System &amp; SaaS Actions</h6>
+<p class="text-dim">Disconnecting suspicious external OAuth tokens and restricting external document file-sharing access permissions.</p>
+</div>
+</div>
+<div class="automation-guardrail-banner text-yellow border-yellow text-small">
+<strong>Governance Guardrail:</strong> Response automation will be introduced gradually. Containment actions require manual validation and manager approval during the initial pilot stage.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">22</div></section>
+<section class="slide content-slide dark-theme" data-index="23" data-note="NIST CSF is a cybersecurity framework that helps organize a security program into Govern, Identify, Protect, Detect, Respond, and Recover. I use NIST to show that this project is not only a tool. It supports governance, inventories, access control, monitoring, incident response, recovery, and compliance evidence.">
+<h3>NIST Cybersecurity Framework Alignment</h3>
+<div class="nist-grid-6-functions text-small">
+<div class="nist-function-card">
+<div class="nist-header bg-dark-blue">GOVERN</div>
+<p class="text-dim text-mini-note">Defining corporate security policies, asset ownership, and strategic risk registers.</p>
+</div>
+<div class="nist-function-card">
+<div class="nist-header bg-dark-blue">IDENTIFY</div>
+<p class="text-dim text-mini-note">Maintaining live registers of active users, cloud spaces, and SaaS software.</p>
+</div>
+<div class="nist-function-card">
+<div class="nist-header bg-dark-blue">PROTECT</div>
+<p class="text-dim text-mini-note">Enforcing multi-factor authentication (MFA) and strict employee offboarding steps.</p>
+</div>
+<div class="nist-function-card">
+<div class="nist-header bg-cyan text-black">DETECT</div>
+<p class="text-dim text-mini-note">Deploying automated log pipelines, alert rules, and correlation models.</p>
+</div>
+<div class="nist-function-card">
+<div class="nist-header bg-cyan text-black">RESPOND</div>
+<p class="text-dim text-mini-note">Running interactive investigation workspaces and documented containment steps.</p>
+</div>
+<div class="nist-function-card">
+<div class="nist-header bg-dark-blue">RECOVER</div>
+<p class="text-dim text-mini-note">Restoring secure user accounts and updating logic to prevent future incidents.</p>
+</div>
+</div>
+<div class="slide-footer-text text-dim text-mini-note text-center">
+    * Framework source guidelines: NIST CSF 2.0 reference standards map.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">23</div></section>
+<section class="slide content-slide dark-theme" data-index="24" data-note="The platform ensures continuous governance, moving away from stressful crunch periods right before an audit. It automatically tracks offboarding confirmation and SaaS software risks.">
+<h3>Governance and Compliance Capabilities</h3>
+<div class="governance-split-layout text-small">
+<div class="gov-pane bg-dark-charcoal">
+<h5>Continuous Internal Compliance Mapping</h5>
+<ul>
+<li>Logs employee offboarding confirmation to verify access removal.</li>
+<li>Flags dormant or inactive user credentials automatically.</li>
+<li>Audits administrative profile additions and modifications.</li>
+<li>Tracks security training completion metrics against active users.</li>
+</ul>
+</div>
+<div class="gov-pane bg-dark-charcoal">
+<h5>Audit-Ready Controls Reporting</h5>
+<ul>
+<li>Maintains accurate, centralized logs of third-party SaaS risks.</li>
+<li>Tracks external document sharing history and public links.</li>
+<li>Generates clear security performance metrics for executive review.</li>
+<li>Replaces manual tracking documents with continuous, verifiable logs.</li>
+</ul>
+</div>
+</div>
+<div class="governance-focus-statement bold-text text-cyan text-center">
+    Shifting operations from reactive audit preparation to continuous security governance.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">24</div></section>
+<section class="slide content-slide dark-theme" data-index="25" data-note="the platform will be divided into Security Operations, Identity Security, SaaS and OAuth visibility, Data Protection and DLP, and Governance metrics. The blueprint also includes inventory, data-source validation, investigations, NIST mapping, and dashboards.">
+<h3>Architectural Platform Modules</h3>
+<div class="modules-grid-4 text-small">
+<div class="module-block border-cyan">
+<h6>Security Operations Engine</h6>
+<p class="text-dim">Manages automated threat ingestion, alert queues, correlation timelines, and case logs.</p>
+</div>
+<div class="module-block border-orange">
+<h6>Identity Security Module</h6>
+<p class="text-dim">Tracks multi-factor authentication compliance, administrative changes, and inactive accounts.</p>
+</div>
+<div class="module-block border-yellow">
+<h6>SaaS, OAuth &amp; DLP</h6>
+<p class="text-dim">Monitors OAuth app permissions, file-sharing activity, DLP events, suspicious forwarding, and sensitive-data exposure.</p>
+</div>
+<div class="module-block border-green">
+<h6>Governance &amp; Metrics</h6>
+<p class="text-dim">Displays NIST control alignment status and compiles audit evidence tables automatically.</p>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">25</div></section>
+<section class="slide content-slide dark-theme" data-index="26" data-note=the pilot roadmap. The first work is foundation and inventory, then Google Workspace monitoring, then alert and investigation workflow, then Orkavault, DLP, Gemini activity, and machine-learning-assisted anomaly detection if enough data is available.">
+<h3>Phased Project Roadmap</h3>
+<div class="roadmap-timeline-container text-small">
+<div class="roadmap-milestone active-step">
+<div class="milestone-header text-green">Phase 1: Foundations</div>
+<p class="text-dim">Build clear identity inventories, draft core access rules, and map log access lines.</p>
+</div>
+<div class="roadmap-milestone active-step">
+<div class="milestone-header text-cyan">Phase 2: Core SIEM</div>
+<p class="text-dim">Connect Google Workspace log paths and deploy our first 10 threat detection rules.</p>
+</div>
+<div class="roadmap-milestone">
+<div class="milestone-header text-yellow">Phase 3: Investigations</div>
+<p class="text-dim">Launch cross-system event correlation logic, case boards, and visual user timelines.</p>
+</div>
+<div class="roadmap-milestone">
+<div class="milestone-header text-dim">Phases 4 &amp; 5: Scale</div>
+<p class="text-dim">Integrate AWS log sets, deploy automated notification loops, and open compliance reporting dashboards.</p>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">26</div></section>
+<section class="slide content-slide dark-theme" data-index="27" data-note="Pilot scope. Google Workspace logins, Admin logs, OAuth, Drive sharing, Groups, Orkavault if available, Gemini activity logs where available, and DLP events if the license and visibility support it. DLP matters because it shows when sensitive data is being shared, downloaded, or sent in a risky way.">
+<h3>Our Proposed Pilot Scope</h3>
+<div class="pilot-scope-layout text-small">
+<div class="pilot-left-pane bg-dark-blue border-cyan">
+<h5>Target Pilot Log Sets</h5>
+<ul>
+<li>Google Workspace authentication and login trails.</li>
+<li>Core administrative configuration audit logs.</li>
+<li>Third-party OAuth application request connections.</li>
+<li>Google Drive external folder sharing state changes.</li>
+<li>Orkavault baseline authentication events.</li>
+<li>DLP and sensitive-data events where Google Workspace licensing and visibility allow.</li><li>Gemini Workspace activity logs where Google Admin visibility allows.</li></ul>
+</div>
+<div class="pilot-right-pane bg-dark-charcoal">
+<h5>Initial 10 High-Risk Alert Rules</h5>
+<div class="rules-tag-cloud">
+<span>Repeated Login Failures</span>
+<span>Geo Impossible Travel</span>
+<span>New Device Login</span>
+<span>Disabled MFA Safeguards</span>
+<span>Super Admin Assignment</span>
+<span>Suspicious OAuth Request</span>
+<span>External Folder Links</span>
+<span>Mass Data Download</span>
+<span>Terminated Account Action</span>
+<span>Sensitive Data / DLP Event</span><span>Gemini Activity Review</span></div>
+</div>
+</div>
+<div class="pilot-objective-callout text-center bold-text text-green">
+    Pilot Target: Establish a unified data view and confirm a single, complete analyst investigation workflow.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">27</div></section>
+<section class="slide content-slide dark-theme" data-index="28" data-note="I evaluate this project success using a clear metrics program. These pilot metrics track log ingestion percentages, true-positive alert conversion rates, and account offboarding speed.">
+<h3>Success Metrics Program</h3>
+<div class="metrics-dashboard-simulation text-small">
+<table class="metrics-grid-table">
+<thead>
+<tr>
+<th>Target Measurement Category</th>
+<th>Specific Operational Metric</th>
+<th>Proposed Target Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="bold-text">System Log Visibility</td>
+<td>Percentage of core corporate log streams successfully centralized.</td>
+<td class="text-green bold-text">100% Target</td>
+</tr>
+<tr>
+<td class="bold-text">Detection Performance</td>
+<td>Active rules verified against target attack vectors.</td>
+<td class="text-green bold-text">10 Active Rules</td>
+</tr>
+<tr>
+<td class="bold-text">Response Capability</td>
+<td>Mean Time to Acknowledge (MTA) critical operational alerts.</td>
+<td class="text-cyan bold-text">&lt; 15 Minutes</td>
+</tr>
+<tr>
+<td class="bold-text">Identity Hygiene</td>
+<td>Dormant user credentials identified and safely removed.</td>
+<td class="text-yellow bold-text Continuous">Continuous Audit</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="slide-footer-text text-dim text-mini-note text-center">
+    * Baseline parameters represent targeted pilot performance objectives.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">28</div></section>
+<section class="slide content-slide dark-theme" data-index="29" data-note="I understand PROJXON may not have a large infrastructure to protect right now, but this is exactly why the foundation matters early. The value is keeping a strong security posture while the company grows, making investigations faster, and showing partners or future partnerships that security and compliance are being taken seriously.">
+<h3>Concrete Business Value</h3>
+<div class="value-cards-container-5 text-small">
+<div class="value-card-box">
+<div class="value-icon visibility-cyan"></div>
+<h6>Unified Visibility</h6>
+<p class="text-dim">Eliminates fragmented logs, delivering one pane of glass for company health.</p>
+</div>
+<div class="value-card-box">
+<div class="value-icon efficiency-cyan"></div>
+<h6>Operational Efficiency</h6>
+<p class="text-dim">Saves valuable engineering time by ending manual administrative console searches.</p>
+</div>
+<div class="value-card-box">
+<div class="value-icon reduction-cyan"></div>
+<h6>Risk Reduction</h6>
+<p class="text-dim">Identifies account takeovers and data exposure in minutes instead of weeks.</p>
+</div>
+<div class="value-card-box">
+<div class="value-icon accountability-cyan"></div>
+<h6>Clear Accountability</h6>
+<p class="text-dim">Generates audit trails for user actions, software connections, and administrative edits.</p>
+</div>
+<div class="value-card-box">
+<div class="value-icon scalability-cyan"></div>
+<h6>Operational Scale</h6>
+<p class="text-dim">Establishes a modular foundation that grows seamlessly alongside our distributed workforce.</p>
+</div>
+</div>
+<div class="value-summary-statement bold-text text-center text-green">
+    The platform turns raw system logs into active business intelligence.
+  </div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">29</div></section>
+<section class="slide content-slide dark-theme" data-index="30" data-note="Looking ahead, I plan to integrate a secure AI assistant. This module helps analysts ask plain-English questions to query threat data quickly, keeping a human expert in the loop for all final decisions.">
+<h3>Future Innovation: AI Investigation Assistant</h3>
+<div class="ai-assistant-split-grid text-small">
+<div class="ai-interaction-simulation bg-dark-charcoal border-cyan">
+<div class="chat-row prompt-row"><strong>Analyst Query:</strong> "Why did case #2026-8941 fire? Show what happened before and after the login."</div>
+<div class="chat-row response-row text-cyan"><strong>AI Engine Output:</strong> "Alert fired because user account alex.boreman signed in from an unfamiliar IP address. Five minutes prior, 12 password failures occurred. Three minutes after, an external sharing link was added to a confidential Drive file."</div>
+</div>
+<div class="ai-guardrails-pane bg-dark-blue">
+<h5>Core Architectural Assist Rules</h5>
+<ul>
+<li>Speeds up threat data parsing without manual query writing.</li>
+<li>Maps active incident patterns to the standard MITRE ATT&amp;CK index instantly.</li>
+<li>Generates simple text summaries for incident reports.</li>
+</ul>
+<div class="guardrail-footer-text text-orange bold-text">
+        Guardrail: The AI operates purely as an assistant. Final validation and containment authority remain strictly with the human analyst.
+      </div>
+</div>
+</div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">30</div></section>
+<section class="slide content-slide dark-theme" data-index="31" data-note="For the close, I am asking for simple approval to continue Phase 1. I already have someone willing to help with the project, so I am not asking for budget or a large stakeholder group. I am asking to move forward with the pilot, use approved read-only security data, and continue building during the 6-month internship.">
+<h3>Executive Decision: Approve Phase 1</h3>
+<div class="recommendation-main-statement">I am requesting approval to continue Phase 1 of the PROJXON Security Operations Platform during my 6-month internship. The goal is to centralize approved security audit data, build a realistic pilot, and show how the platform can support monitoring, investigation, compliance readiness, and future growth.</div>
+<div class="scope-columns-container" style="margin-top:22px;">
+<div class="scope-box box-in-scope border-cyan">
+<h4 class="text-cyan">What the Pilot Will Deliver</h4>
+<ul>
+<li>Centralized visibility across Google Workspace and Orkavault security activity.</li>
+<li>Monitoring of identity access, OAuth applications, and Google Drive sharing.</li>
+<li>Initial threat-detection rules for the company’s highest-priority risks.</li>
+<li>A clear investigation dashboard for reviewing and documenting security incidents.</li>
+<li>Better access oversight for employees, interns, and privileged accounts.</li>
+</ul>
+</div>
+<div class="scope-box border-green">
+<h4 class="text-green">Business Value</h4>
+<ul>
+<li>Faster detection and investigation of suspicious activity.</li>
+<li>Less time spent searching separate administrative systems.</li>
+<li>Stronger accountability for access and security-related changes.</li>
+<li>Improved readiness for future audits and compliance requirements.</li>
+<li>A scalable security foundation that grows with PROJXON.</li>
+</ul>
+</div>
+</div>
+<div class="next-actions-checklist text-small"><h5>Approval Requested</h5><ul class="clean-list-checklist"><li><span class="checkbox-custom"></span> Approve Phase 1 of the Security Operations Platform pilot.</li><li><span class="checkbox-custom"></span> Allow use of approved read-only security audit data needed for the pilot.</li><li><span class="checkbox-custom"></span> Allow me to continue working with the person who is willing to help with this project.</li><li><span class="checkbox-custom"></span> Allow the pilot to be developed and demonstrated within the 6-month internship timeline.</li></ul></div>
+<div class="deck-slide-number" style="position:absolute;right:26px;bottom:20px;color:#7890aa;font-size:12px;">31</div>
+<div class="closing-banner bg-dark-blue border-green"><div class="closing-main bold-text text-white text-center">Phase 1 is a practical first step toward stronger security posture, better visibility, and future compliance readiness.</div><div class="closing-sub text-dim text-small text-center">The pilot can begin small, use existing tools and available logs, and grow as PROJXON grows.</div></div></section>
+</main>
+<div aria-live="polite" id="notesPanel"></div>
+<div id="overview"><button class="thumb" data-go="0" type="button"><div class="num">SLIDE 01</div><div class="ttl">PROJXON Security Operations Platform</div></button><button class="thumb" data-go="1" type="button"><div class="num">SLIDE 02</div><div class="ttl">What the Platform Is</div></button><button class="thumb" data-go="2" type="button"><div class="num">SLIDE 03</div><div class="ttl">Executive Summary</div></button><button class="thumb" data-go="3" type="button"><div class="num">SLIDE 04</div><div class="ttl">Current Business Environment</div></button><button class="thumb" data-go="4" type="button"><div class="num">SLIDE 05</div><div class="ttl">Current Security Challenges</div></button><button class="thumb" data-go="5" type="button"><div class="num">SLIDE 06</div><div class="ttl">Why Existing Tools Are Not Enough</div></button><button class="thumb" data-go="6" type="button"><div class="num">SLIDE 07</div><div class="ttl">The Hard Truth: Workspace Security Scorecard</div></button><button class="thumb" data-go="7" type="button"><div class="num">SLIDE 08</div><div class="ttl">The Vision</div></button><button class="thumb" data-go="8" type="button"><div class="num">SLIDE 09</div><div class="ttl">Project Scope Boundaries</div></button><button class="thumb" data-go="9" type="button"><div class="num">SLIDE 10</div><div class="ttl">Validated Platform Data Sources</div></button><button class="thumb" data-go="10" type="button"><div class="num">SLIDE 11</div><div class="ttl">The Technical Data Pipeline</div></button><button class="thumb" data-go="11" type="button"><div class="num">SLIDE 12</div><div class="ttl">The Threat Detection Engine</div></button><button class="thumb" data-go="12" type="button"><div class="num">SLIDE 13</div><div class="ttl">Anomaly Detection Defended</div></button><button class="thumb" data-go="13" type="button"><div class="num">SLIDE 14</div><div class="ttl">The Power of Event Correlation</div></button><button class="thumb" data-go="14" type="button"><div class="num">SLIDE 15</div><div class="ttl">Mockup: Security Alert Interface</div></button><button class="thumb" data-go="15" type="button"><div class="num">SLIDE 16</div><div class="ttl">Mockup: Analyst Investigation Console</div></button><button class="thumb" data-go="16" type="button"><div class="num">SLIDE 17</div><div class="ttl">Investigation Timeline Case Study</div></button><button class="thumb" data-go="17" type="button"><div class="num">SLIDE 18</div><div class="ttl">Mockup: User 360-Degree Security Profile</div></button><button class="thumb" data-go="18" type="button"><div class="num">SLIDE 19</div><div class="ttl">Mockup: Executive KPI Dashboard</div></button><button class="thumb" data-go="19" type="button"><div class="num">SLIDE 20</div><div class="ttl">Mockup: SOC Analyst Operations View</div></button><button class="thumb" data-go="20" type="button"><div class="num">SLIDE 21</div><div class="ttl">Industry Framework: MITRE ATT&amp;CK Mapping</div></button><button class="thumb" data-go="21" type="button"><div class="num">SLIDE 22</div><div class="ttl">Coordinated Incident Response Workflow</div></button><button class="thumb" data-go="22" type="button"><div class="num">SLIDE 23</div><div class="ttl">NIST Cybersecurity Framework Alignment</div></button><button class="thumb" data-go="23" type="button"><div class="num">SLIDE 24</div><div class="ttl">Governance and Compliance Capabilities</div></button><button class="thumb" data-go="24" type="button"><div class="num">SLIDE 25</div><div class="ttl">Architectural Platform Modules</div></button><button class="thumb" data-go="25" type="button"><div class="num">SLIDE 26</div><div class="ttl">Phased Project Roadmap</div></button><button class="thumb" data-go="26" type="button"><div class="num">SLIDE 27</div><div class="ttl">Our Proposed Pilot Scope</div></button><button class="thumb" data-go="27" type="button"><div class="num">SLIDE 28</div><div class="ttl">Success Metrics Program</div></button><button class="thumb" data-go="28" type="button"><div class="num">SLIDE 29</div><div class="ttl">Concrete Business Value</div></button><button class="thumb" data-go="29" type="button"><div class="num">SLIDE 30</div><div class="ttl">Future Innovation: AI Investigation Assistant</div></button><button class="thumb" data-go="30" type="button"><div class="num">SLIDE 31</div><div class="ttl">Executive Decision: Approve Phase 1</div></button></div>
+<nav aria-label="Presentation controls" id="chrome">
+<button id="prev" type="button">← Previous</button>
+<button id="next" type="button">Next →</button>
+<button id="notes" type="button">Speaker Notes</button>
+<button id="overviewBtn" type="button">Overview</button>
+<button id="fullBtn" type="button">Full Screen</button>
+<button id="printBtn" type="button">Print / Save PDF</button>
+<span id="counter"></span>
+</nav>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let index=0;
+const counter=document.getElementById('counter');
+const progress=document.getElementById('progress');
+const notesPanel=document.getElementById('notesPanel');
+const overview=document.getElementById('overview');
+
+function showSlide(n){
+  index=(n+slides.length)%slides.length;
+  slides.forEach((s,i)=>s.classList.toggle('active',i===index));
+  counter.textContent=`${index+1} / ${slides.length}`;
+  progress.style.width=`${((index+1)/slides.length)*100}%`;
+  notesPanel.innerHTML=`<strong>Speaker notes</strong><p>${slides[index].dataset.note || 'No notes for this slide.'}</p>`;
+  history.replaceState(null,'',`#${index+1}`);
+}
+function next(){showSlide(index+1)}
+function prev(){showSlide(index-1)}
+document.getElementById('next').addEventListener('click',next);
+document.getElementById('prev').addEventListener('click',prev);
+document.getElementById('notes').addEventListener('click',()=>notesPanel.classList.toggle('show'));
+document.getElementById('overviewBtn').addEventListener('click',()=>overview.classList.toggle('show'));
+document.getElementById('printBtn').addEventListener('click',()=>window.print());
+document.getElementById('fullBtn').addEventListener('click',()=>document.documentElement.requestFullscreen?.());
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();next()}
+  if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev()}
+  if(e.key==='Home')showSlide(0);
+  if(e.key==='End')showSlide(slides.length-1);
+  if(e.key.toLowerCase()==='n')notesPanel.classList.toggle('show');
+  if(e.key.toLowerCase()==='o')overview.classList.toggle('show');
+  if(e.key==='Escape')overview.classList.remove('show');
+});
+overview.querySelectorAll('.thumb').forEach(t=>t.addEventListener('click',()=>{
+  showSlide(Number(t.dataset.go));
+  overview.classList.remove('show');
+}));
+const start=Math.max(0,Math.min(slides.length-1,Number(location.hash.slice(1)||1)-1));
+showSlide(start);
+</script>
+</body>
+</html>
+
