@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PROJXON Security Platform — Executive Strategy & Architecture Proposal</title>
+<style>
+:root {
+  --bg: #030712;
+  --panel: #0b1329;
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --accent: #38bdf8;
+  --accent-glow: rgba(56, 189, 248, 0.18);
+  --blue: #60a5fa;
+  --purple: #a855f7;
+  --green: #34d399;
+  --orange: #fb923c;
+  --red: #f87171;
+  --text: #f9fafb;
+  --text-dim: #9ca3af;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+#deck { height: 100vh; width: 100vw; position: relative; }
+.slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 60px 80px;
+  background:
+    radial-gradient(circle at 50% 20%, var(--accent-glow), transparent 45%),
+    radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.08), transparent 40%),
+    linear-gradient(180deg, #030712 0%, #080e1e 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  overflow-y: auto;
+}
+.slide.active { display: flex; opacity: 1; }
+.slide-tag {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+h2.slide-title {
+  font-size: clamp(26px, 3vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+  text-align: center;
+  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+p.slide-subtitle {
+  font-size: clamp(13px, 1.3vw, 17px);
+  color: var(--text-dim);
+  margin: 0 0 24px;
+  text-align: center;
+  max-width: 880px;
+  font-weight: 400;
+}
+.card {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+}
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; width: 100%; max-width: 1150px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 1180px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: 100%; max-width: 1220px; }
+.pipeline-flow, .flow-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 1200px;
+  flex-wrap: wrap;
+}
+.pipe-step, .flow-box {
+  flex: 1;
+  min-width: 125px;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.pipe-arrow, .flow-arrow { font-size: 16px; color: var(--accent); font-weight: bold; }
+.icon-box { font-size: 28px; margin-bottom: 6px; }
+.mockup-window {
+  width: 100%;
+  max-width: 1150px;
+  background: #060b17;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+.mockup-header {
+  background: #0f172a;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1px solid var(--panel-border);
+}
+.dot { width: 9px; height: 9px; border-radius: 50%; }
+.dot-red { background: var(--red); }
+.dot-yellow { background: var(--orange); }
+.dot-green { background: var(--green); }
+#chrome {
+  position: fixed;
+  bottom: 0;
+  inset-x: 0;
+  height: 56px;
+  background: rgba(3, 7, 18, 0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+}
+.chrome-btn {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.chrome-btn:hover { border-color: var(--accent); color: var(--accent); }
+#notesPanel {
+  position: fixed;
+  right: 20px;
+  bottom: 68px;
+  width: 400px;
+  max-height: 280px;
+  background: #0b1329;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+  display: none;
+  overflow-y: auto;
+  z-index: 110;
+}
+#notesPanel.show { display: block; }
+#progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent);
+  transition: width 0.3s;
+  z-index: 120;
+}
+.brand-badge {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  border: 1px solid var(--panel-border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+@media (max-width: 1024px) {
+  .grid-4, .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .pipeline-flow, .flow-container { flex-direction: column; align-items: stretch; }
+  .pipe-arrow, .flow-arrow { text-align: center; transform: rotate(90deg); }
+  .slide { padding: 30px 20px 70px; }
+  h2.slide-title { font-size: 26px; }
+}
+@media (max-width: 640px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  #notesPanel { width: 90vw; right: 5vw; }
+}
+@media print {
+  body { overflow: visible; background: #fff; color: #000; }
+  .slide { position: relative; opacity: 1 !important; display: flex !important; page-break-after: always; height: 100vh; padding: 40px; background: #fff; color: #000; }
+  #chrome, #notesPanel, #progress-bar, .brand-badge { display: none !important; }
+  .card, .mockup-window { border: 1px solid #ccc; background: #f9f9f9; color: #000; }
+  h2.slide-title { background: none; -webkit-text-fill-color: #000; color: #000; }
+}
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+<main id="deck">
+<section class="slide active" data-index="1" data-note="Good morning. Today, I am proposing the PROJXON Security Platform—a centralized strategy to monitor, investigate, and secure our infrastructure as our operations grow.">
+<div class="brand-badge">PROJXON INTERNAL PROPOSAL</div><div style="text-align:center; max-width:920px;"><span class="slide-tag">Executive Strategy & Architecture</span><h1 style="font-size: clamp(34px, 4.8vw, 60px); font-weight: 900; margin: 16px 0; background: linear-gradient(135deg, #ffffff 30%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">PROJXON Security Platform</h1><p style="font-size: clamp(15px, 1.6vw, 20px); color: var(--text-dim); margin-bottom: 32px;">Building the Foundation for PROJXON’s Security Operations & Governance</p><div style="font-size: 13px; color: var(--accent); border-top: 1px solid var(--panel-border); padding-top: 16px; display: inline-block;">Presented by <strong>Zainab Abdulhasan</strong> • Cybersecurity Specialist Intern • July 2026</div></div></section>
+<section class="slide" data-index="2" data-note="As PROJXON continues to grow, our security should grow with it. Building this platform early gives us a strong foundation instead of trying to fix security later. It helps us see what's happening across the company, investigate incidents faster, and prepares us for future clients, audits, and compliance."><div class="brand-badge">Act 1 — Strategic Context</div><h2 class="slide-title">Build Security Before Complexity</h2><p class="slide-subtitle">Establishing operational visibility and governance early in PROJXON’s growth trajectory.</p><div class="grid-2"><div class="card"><h3 style="color:var(--accent); margin-top:0;">Proactive Operational Value</h3><ul style="font-size:13px; color:var(--text-dim); line-height:1.8; padding-left:18px; margin:0;"><li><strong style="color:#fff;">Stronger Posture:</strong> Scalable security baseline as PROJXON expands.</li><li><strong style="color:#fff;">Faster Investigations:</strong> Centralized logs remove multi-dashboard friction.</li><li><strong style="color:#fff;">Deep Visibility:</strong> Real-time insight into users, access, and cloud activity.</li></ul></div><div class="card"><h3 style="color:var(--green); margin-top:0;">External & Strategic Trust</h3><ul style="font-size:13px; color:var(--text-dim); line-height:1.8; padding-left:18px; margin:0;"><li><strong style="color:#fff;">Audit Readiness:</strong> Clear evidence export for security and compliance reviews.</li><li><strong style="color:#fff;">Client Trust:</strong> Demonstrates mature security standards to future partners.</li><li><strong style="color:#fff;">Cost Efficiency:</strong> Maximizes existing infrastructure without expensive enterprise SIEM fees.</li></ul></div></div></section>
+<section class="slide" data-index="3" data-note="Right now, our security data is split across four distinct platforms. Cross-referencing an incident requires pivoting between multiple interfaces."><div class="brand-badge">Act 1 — Current State</div><h2 class="slide-title">Current Security Reality</h2><p class="slide-subtitle">Isolated security tools force manual log correlation and create operational delay.</p><div class="grid-4" style="text-align:center;"><div class="card"><div class="icon-box">🌐</div><h4>Google Workspace</h4><p style="font-size:12px; color:var(--text-dim);">Identity & Email Logs</p></div><div class="card"><div class="icon-box">🔑</div><h4>Orkavault</h4><p style="font-size:12px; color:var(--text-dim);">Secrets & Credential Audits</p></div><div class="card"><div class="icon-box">☁️</div><h4>AWS Infrastructure</h4><p style="font-size:12px; color:var(--text-dim);">CloudTrail Activity</p></div><div class="card"><div class="icon-box">🔌</div><h4>SaaS Applications</h4><p style="font-size:12px; color:var(--text-dim);">Third-Party Access</p></div></div><div style="font-size:24px; color:var(--orange); margin: 16px 0;">↓</div><div class="card" style="width: 100%; max-width: 700px; text-align: center; border-color: var(--orange);"><strong style="color: var(--orange);">Fragmented Search • Manual Correlation • Delayed Threat Visibility</strong></div></section>
+<section class="slide" data-index="4" data-note="As our team scales, key operational risks emerge—such as intern onboarding cycles, shared admin accounts, and third-party SaaS connections."><div class="brand-badge">Act 1 — Risk Landscape</div><h2 class="slide-title">Risks as PROJXON Grows</h2><p class="slide-subtitle">Operational vulnerabilities emerging from workforce dynamics and cloud expansion.</p><div class="grid-4"><div class="card" style="text-align:center;"><div class="icon-box">👥</div><h4>Team Rotations</h4><p style="font-size:12px; color:var(--text-dim);">Intern onboarding/offboarding timing gaps.</p></div><div class="card" style="text-align:center;"><div class="icon-box">🔑</div><h4>Shared Access</h4><p style="font-size:12px; color:var(--text-dim);">Credential vaults lack individual user attribution.</p></div><div class="card" style="text-align:center;"><div class="icon-box">🔌</div><h4>Third-Party Apps</h4><p style="font-size:12px; color:var(--text-dim);">Unmonitored OAuth grants and SaaS integrations.</p></div><div class="card" style="text-align:center;"><div class="icon-box">💻</div><h4>BYOD & Remote</h4><p style="font-size:12px; color:var(--text-dim);">Access from diverse networks and personal devices.</p></div></div></section>
+<section class="slide" data-index="5" data-note="The Security Platform unifies these disparate logs into a single centralized engine, performing normalization, threat detection, and risk scoring."><div class="brand-badge">Act 2 — The Solution</div><h2 class="slide-title">Introducing the PROJXON Security Platform</h2><p class="slide-subtitle">A centralized intelligence engine for continuous security monitoring and response.</p><div class="card" style="text-align:center; padding: 32px; max-width: 850px; width:100%; border-color: var(--accent);"><div style="font-size: 50px; margin-bottom: 10px;">🛡️</div><h3 style="font-size: 26px; margin: 0 0 10px; color: var(--accent);">Unified Security Intelligence Layer</h3><p style="font-size: 14px; color: var(--text-dim); margin: 0; line-height: 1.6;">Consolidates Google Workspace, Orkavault, and CloudTrail activity into a single searchable repository, delivering real-time correlation, identity scorecards, and guided incident triage.</p></div></section>
+<section class="slide" data-index="6" data-note="This is how every security event moves through the platform. We collect logs from our systems, normalize them into one format, store them in a central database, then run detection rules and risk scoring. Finally, the platform presents everything in dashboards and investigations so analysts can quickly understand what's happening."><div class="brand-badge">Act 2 — Architecture</div><h2 class="slide-title">End-to-End Security Data Pipeline</h2><p class="slide-subtitle">How security telemetry flows from raw event ingestion to executive dashboards.</p><div class="pipeline-flow"><div class="pipe-step"><div style="font-size:11px; color:var(--accent); font-weight:bold;">1. SOURCES</div><div style="font-size:12px; margin-top:4px;">Workspace / Orkavault / CloudTrail</div></div><span class="pipe-arrow">→</span><div class="pipe-step"><div style="font-size:11px; color:var(--accent); font-weight:bold;">2. COLLECTION</div><div style="font-size:12px; margin-top:4px;">Continuous Pipeline</div></div><span class="pipe-arrow">→</span><div class="pipe-step"><div style="font-size:11px; color:var(--accent); font-weight:bold;">3. ENRICHMENT</div><div style="font-size:12px; margin-top:4px;">Normalization & Schema Mapping</div></div><span class="pipe-arrow">→</span><div class="pipe-step"><div style="font-size:11px; color:var(--accent); font-weight:bold;">4. STORAGE</div><div style="font-size:12px; margin-top:4px;">PostgreSQL Repository</div></div></div><div style="font-size:20px; color:var(--accent); margin: 12px 0;">↓</div><div class="pipeline-flow"><div class="pipe-step"><div style="font-size:11px; color:var(--purple); font-weight:bold;">5. DETECTION</div><div style="font-size:12px; margin-top:4px;">Threat Rules & Correlation</div></div><span class="pipe-arrow">→</span><div class="pipe-step"><div style="font-size:11px; color:var(--purple); font-weight:bold;">6. RISK ENGINE</div><div style="font-size:12px; margin-top:4px;">Contextual Scoring</div></div><span class="pipe-arrow">→</span><div class="pipe-step"><div style="font-size:11px; color:var(--orange); font-weight:bold;">7. INCIDENTS</div><div style="font-size:12px; margin-top:4px;">Alert Triage & Prioritization</div></div><span class="pipe-arrow">→</span><div class="pipe-step"><div style="font-size:11px; color:var(--green); font-weight:bold;">8. OUTCOMES</div><div style="font-size:12px; margin-top:4px;">Dashboards & Analyst Review</div></div></div></section>
+<section class="slide" data-index="7" data-note="This slide sets clear expectations. Phase 1 focuses on building the foundation first—collecting logs, detecting threats, and providing visibility. More advanced features like machine learning and automation can be added later once the platform has enough historical data and has been validated."><div class="brand-badge">Act 2 — Project Boundaries</div><h2 class="slide-title">In-Scope vs. Out-of-Scope (Phase 1)</h2><p class="slide-subtitle">Disciplined operational boundaries protecting the deliverable timeline.</p><div class="grid-2"><div class="card" style="border-color:var(--green);"><h4 style="color:var(--green); margin-top:0;">In Scope for Phase 1</h4><ul style="font-size:12px; color:var(--text-dim); line-height:1.6; padding-left:16px; margin:0;"><li>Google Workspace log ingestion & historical import</li><li>Log normalization & searchable event repository</li><li>Workspace Security Scorecard & Identity Rules</li><li>Rule-based threat detection & basic event correlation</li><li>Explainable risk scoring & Incident Management</li><li>KPI dashboard, MITRE ATT&CK & NIST CSF tracking</li><li>Analyst-reviewed AI assistance & working prototype</li></ul></div><div class="card" style="border-color:var(--red);"><h4 style="color:var(--red); margin-top:0;">Out of Scope for Phase 1</h4><ul style="font-size:12px; color:var(--text-dim); line-height:1.6; padding-left:16px; margin:0;"><li>Fully automated account suspension / containment</li><li>Machine learning detection algorithms at launch</li><li>Full endpoint agent or network packet inspection</li><li>Replacement of Google Workspace, AWS, or Orkavault</li><li>Full enterprise SIEM feature parity</li><li>24/7 manned SOC coverage</li><li>Production deployment prior to security review</li></ul></div></div></section>
+<section class="slide" data-index="8" data-note="A flagship feature is the Workspace Security Scorecard, evaluating our core Google Workspace posture based on 14 objective safety controls."><div class="brand-badge">Act 3 — Core Feature</div><h2 class="slide-title">Workspace Security Scorecard</h2><p class="slide-subtitle">Evidence-based posture evaluation scoring Google Workspace security health.</p><div class="grid-2"><div class="card" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><span style="font-size:12px; color:var(--text-dim); font-weight:bold;">WORKSPACE HEALTH SCORE</span><div style="font-size:64px; font-weight:900; color:var(--accent); margin:10px 0;">72<span style="font-size:24px;">/100</span></div><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; font-size:11px; text-align:left; color:var(--text-dim);"><div>• Identity Security: <strong style="color:#fff;">80</strong></div><div>• Access Control: <strong style="color:#fff;">65</strong></div><div>• Data Protection: <strong style="color:#fff;">70</strong></div><div>• Governance: <strong style="color:#fff;">85</strong></div></div></div><div class="card"><h4 style="color:var(--accent); margin-top:0;">14 Evaluated Posture Controls</h4><div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:11px; color:var(--text-dim);"><div>• MFA coverage</div><div>• Inactive accounts</div><div>• Suspended activity</div><div>• Privileged accounts</div><div>• Shared admin accounts</div><div>• External file sharing</div><div>• Risky OAuth apps</div><div>• Forwarding rules</div><div>• Login anomalies</div><div>• Offboarding status</div><div>• Stale group membership</div><div>• Recovery info gaps</div><div>• Security alerts reviewed</div><div>• Admin activity audit</div></div></div></div></section>
+<section class="slide" data-index="9" data-note="Identity is our primary perimeter. These specific rules monitor access anomalies across intern lifecycles, permissions, and locations."><div class="brand-badge">Act 3 — Identity Rules</div><h2 class="slide-title">Access Rules & Identity Monitoring</h2><p class="slide-subtitle">Granular detection policies targeted at user lifecycle and account access risks.</p><div class="grid-3"><div class="card"><h4 style="color:var(--orange);">Lifecycle & Offboarding</h4><ul style="font-size:12px; color:var(--text-dim); line-height:1.6; padding-left:14px; margin:0;"><li>Former intern account active</li><li>Login past termination date</li><li>Dormant account reactivation</li><li>Unresolved offboarding checklist</li></ul></div><div class="card"><h4 style="color:var(--red);">Privilege & OAuth</h4><ul style="font-size:12px; color:var(--text-dim); line-height:1.6; padding-left:14px; margin:0;"><li>Unexpected Admin role grant</li><li>MFA disabled on account</li><li>Sensitive OAuth permissions</li><li>Shared account multi-device use</li></ul></div><div class="card"><h4 style="color:var(--purple);">Anomalous Behavior</h4><ul style="font-size:12px; color:var(--text-dim); line-height:1.6; padding-left:14px; margin:0;"><li>Login from new country</li><li>Impossible travel velocity</li><li>Repeated login failures</li><li>Out-of-department app access</li></ul></div></div></section>
+<section class="slide" data-index="10" data-note="This slide explains how raw security logs are ingested and processed by the detection engine into actionable security alerts."><div class="brand-badge">Act 3 — Detection Engine</div><h2 class="slide-title">Threat Detection Engine</h2><p class="slide-subtitle">From Raw Logs to Actionable Security Alerts.</p><div class="flow-container" style="margin-bottom:20px;"><div class="flow-box"><strong>Raw Event Ingestion</strong></div><span class="flow-arrow">→</span><div class="flow-box"><strong>Detection Engine Rule</strong></div><span class="flow-arrow">→</span><div class="flow-box"><strong>Context Enrichment</strong></div><span class="flow-arrow">→</span><div class="flow-box"><strong>Risk Score Calculation</strong></div><span class="flow-arrow">→</span><div class="flow-box"><strong>Actionable Alert</strong></div></div><div class="grid-3"><div class="card"><h5 style="margin:0 0 6px; color:var(--accent);">Rule & Threshold</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Detects fixed policy violations and rate spikes.</p></div><div class="card"><h5 style="margin:0 0 6px; color:var(--accent);">Behavioral Baseline</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Compares user actions against historical norms.</p></div><div class="card"><h5 style="margin:0 0 6px; color:var(--accent);">Identity & Offboarding</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Flags unauthorized access post-termination.</p></div></div></section>
+<section class="slide" data-index="11" data-note="A single low-risk event isn't alarming alone, but when connected across Workspace, Orkavault, and AWS, the Correlation Engine flags high-risk threats."><div class="brand-badge">Act 3 — Event Correlation</div><h2 class="slide-title">Multi-System Correlation Engine</h2><p class="slide-subtitle">Connecting isolated low-risk events into cohesive incident narratives.</p><div class="card" style="width:100%; max-width:900px; padding:20px;"><div style="display:flex; justify-content:space-between; align-items:center; gap:10px; font-size:12px; text-align:center;"><div style="background:#090f20; padding:10px; border-radius:8px; flex:1;">New-location login<br/><span style="color:var(--text-dim); font-size:10px;">Workspace</span></div><span style="color:var(--accent); font-weight:bold;">+</span><div style="background:#090f20; padding:10px; border-radius:8px; flex:1;">Credential viewed<br/><span style="color:var(--text-dim); font-size:10px;">Orkavault</span></div><span style="color:var(--accent); font-weight:bold;">+</span><div style="background:#090f20; padding:10px; border-radius:8px; flex:1;">IAM policy changed<br/><span style="color:var(--text-dim); font-size:10px;">AWS CloudTrail</span></div><span style="color:var(--accent); font-weight:bold;">+</span><div style="background:#090f20; padding:10px; border-radius:8px; flex:1;">Audit logs altered<br/><span style="color:var(--text-dim); font-size:10px;">CloudTrail</span></div></div><div style="text-align:center; margin-top:16px; padding-top:12px; border-top:1px solid var(--panel-border);"><span style="background:rgba(248,113,113,0.2); color:var(--red); padding:6px 16px; border-radius:20px; font-weight:bold; font-size:13px;">CRITICAL CORRELATED INCIDENT DETECTED (Risk Score: 94/100)</span></div></div></section>
+<section class="slide" data-index="12" data-note="Mockup 1: The Executive Dashboard offers high-level visibility into total security events, active alerts, risk trends, and compliance scores."><div class="brand-badge">Act 4 — Platform Mockups</div><h2 class="slide-title">Executive Security Dashboard</h2><p class="slide-subtitle">High-level posture oversight, key metrics, and trend monitoring.</p><div class="mockup-window"><div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span style="font-size:11px; color:var(--text-dim); margin-left:8px;">PROJXON Security Platform — Executive Overview</span></div><div style="padding:16px; display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; font-size:12px;"><div style="background:#091024; padding:12px; border-radius:8px; text-align:center;"><div style="color:var(--text-dim); font-size:10px;">TOTAL EVENTS (24H)</div><div style="font-size:22px; font-weight:bold; color:#fff;">142,890</div></div><div style="background:#091024; padding:12px; border-radius:8px; text-align:center;"><div style="color:var(--text-dim); font-size:10px;">OPEN ALERTS</div><div style="font-size:22px; font-weight:bold; color:var(--orange);">3 Active</div></div><div style="background:#091024; padding:12px; border-radius:8px; text-align:center;"><div style="color:var(--text-dim); font-size:10px;">POSTURE SCORE</div><div style="font-size:22px; font-weight:bold; color:var(--accent);">72 / 100</div></div><div style="background:#091024; padding:12px; border-radius:8px; text-align:center;"><div style="color:var(--text-dim); font-size:10px;">NIST COMPLIANCE</div><div style="font-size:22px; font-weight:bold; color:var(--green);">84% Target</div></div></div></div></section>
+<section class="slide" data-index="13" data-note="While the previous slide shows the overall security score, this page explains why that score exists. It highlights the biggest security gaps and gives clear recommendations so administrators know exactly what needs to be fixed first."><div class="brand-badge">Act 4 — Platform Mockups</div><h2 class="slide-title">Scorecard Detail & Remediation View</h2><p class="slide-subtitle">Why the score changed, which controls failed, and what to fix first.</p><div class="mockup-window"><div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span style="font-size:11px; color:var(--text-dim); margin-left:8px;">Workspace Posture Evaluation — Score Details</span></div><div style="padding:16px; font-size:12px; display:grid; grid-template-columns:1fr 2fr; gap:16px;"><div style="background:#091024; padding:14px; border-radius:8px; text-align:center;"><h4 style="margin:0 0 6px; color:var(--accent);">Score: 72/100</h4><span style="color:var(--orange); font-size:11px;">2 High Impact Deductions</span></div><div style="background:#091024; padding:14px; border-radius:8px;"><h5 style="margin:0 0 8px; color:#fff;">Top Remediation Recommendations</h5><div style="font-size:11px; color:var(--text-dim); line-height:1.6;">• <strong>Enforce MFA</strong> on 3 remaining developer accounts (-10 pts)<br/>• <strong>Revoke stale OAuth app</strong> 'External PDF Merger' (-8 pts)<br/>• <strong>Audit shared admin account</strong> 'deploy-admin@projxon.com' (-10 pts)</div></div></div></div></section>
+<section class="slide" data-index="14" data-note="Mockup 3: The Incident Investigation Workspace aggregates timeline evidence, risk scores, and analyst notes into one triage hub."><div class="brand-badge">Act 4 — Platform Mockups</div><h2 class="slide-title">Incident Investigation Workspace</h2><p class="slide-subtitle">Centralized triage, interactive timelines, and investigation notes.</p><div class="mockup-window"><div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span style="font-size:11px; color:var(--text-dim); margin-left:8px;">Incident #INC-1042 — Correlated Anomaly</span></div><div style="padding:16px; font-size:12px; display:grid; grid-template-columns:2fr 1fr; gap:12px;"><div style="background:#091024; padding:12px; border-radius:8px;"><div style="color:var(--accent); font-weight:bold; margin-bottom:6px;">Timeline Evidence</div><div style="font-size:11px; color:var(--text-dim); line-height:1.5;">10:14 AM — Login from 192.168.1.45 (New IP)<br/>10:18 AM — Orkavault production key viewed<br/>10:22 AM — CloudTrail IAM Policy modified</div></div><div style="background:#091024; padding:12px; border-radius:8px; text-align:center;"><div style="color:var(--text-dim); font-size:10px;">ASSIGNED ANALYST</div><div style="font-weight:bold; color:#fff; margin-top:4px;">Zainab A.</div><div style="margin-top:12px; color:var(--red); font-weight:bold;">Risk: 90 / 100</div></div></div></div></section>
+<section class="slide" data-index="15" data-note="Sometimes analysts aren't responding to an alert—they're simply investigating. This Log Explorer lets them perform ad-hoc searches across every collected log, quickly filter events, and inspect the raw data without switching between multiple systems."><div class="brand-badge">Act 4 — Platform Mockups</div><h2 class="slide-title">Global Log Explorer</h2><p class="slide-subtitle">Fast ad-hoc querying across normalized logs with raw JSON inspection.</p><div class="mockup-window"><div class="mockup-header"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div><span style="font-size:11px; color:var(--text-dim); margin-left:8px;">Aegis Query Engine — Search All Ingested Telemetry</span></div><div style="padding:14px; font-size:11px;"><div style="display:flex; gap:8px; margin-bottom:10px;"><input type="text" value="user:'intern@projxon.com' event:'OAuth_Grant'" style="background:#000; border:1px solid var(--panel-border); color:#fff; padding:6px 10px; border-radius:6px; flex:1;" readonly/><button style="background:var(--accent); border:none; color:#000; font-weight:bold; padding:6px 14px; border-radius:6px;">Search</button></div><div style="background:#02050e; border:1px solid var(--panel-border); padding:10px; font-family:monospace; color:var(--green); border-radius:6px;">{ "timestamp": "2026-07-23T15:20:01Z", "actor": "intern@projxon.com", "event": "OAUTH_TOKEN_ISSUED", "scope": "gmail.readonly", "ip": "192.168.1.45" }</div></div></div></section>
+<section class="slide" data-index="16" data-note="Our incident response flow is structured into seven clear phases, keeping analysts in complete control of containment decisions."><div class="brand-badge">Act 5 — Incident Response</div><h2 class="slide-title">Structured Incident-Response Flow</h2><p class="slide-subtitle">End-to-end lifecycle with mandatory human approval before containment.</p><div class="pipeline-flow" style="margin-bottom:20px;"><div class="pipe-step"><strong>1. Detect</strong></div><span class="pipe-arrow">→</span><div class="pipe-step"><strong>2. Validate</strong></div><span class="pipe-arrow">→</span><div class="pipe-step"><strong>3. Prioritize</strong></div><span class="pipe-arrow">→</span><div class="pipe-step"><strong>4. Investigate</strong></div><span class="pipe-arrow">→</span><div class="pipe-step"><strong>5. Contain</strong></div><span class="pipe-arrow">→</span><div class="pipe-step"><strong>6. Recover</strong></div><span class="pipe-arrow">→</span><div class="pipe-step"><strong>7. Document</strong></div></div><div class="card" style="width:100%; max-width:850px; font-size:12px; color:var(--text-dim); border-color:var(--accent);"><strong style="color:var(--accent);">PROJXON Operational Workflow Example:</strong><br/>Suspicious login detected → Analyst verifies user and device context → Workspace/SaaS events aggregated → Contextual risk score assigned → Session revoked or password reset with analyst approval → Incident documented & rules refined.</div></section>
+<section class="slide" data-index="17" data-note="These KPIs help measure how the platform is performing over time. Instead of looking at individual incidents, leadership can monitor trends such as alert volume, security posture, MFA adoption, and operational improvements to understand whether our security program is becoming stronger."><div class="brand-badge">Act 5 — Success Metrics</div><h2 class="slide-title">Key Performance Indicators (KPIs)</h2><p class="slide-subtitle">Measurable metrics tracking operational efficiency and posture improvements.</p><div class="grid-4" style="text-align:center;"><div class="card"><div style="color:var(--accent); font-weight:bold;">Total Events</div><div style="font-size:20px; font-weight:900; margin-top:4px; color:#fff;">142.8K</div><p style="font-size:10px; color:var(--text-dim); margin:4px 0 0;">Ingested Daily</p></div><div class="card"><div style="color:var(--orange); font-weight:bold;">Open Alerts</div><div style="font-size:20px; font-weight:900; margin-top:4px; color:#fff;">3</div><p style="font-size:10px; color:var(--text-dim); margin:4px 0 0;">Pending Triage</p></div><div class="card"><div style="color:var(--purple); font-weight:bold;">MFA Adoption</div><div style="font-size:20px; font-weight:900; margin-top:4px; color:#fff;">94%</div><p style="font-size:10px; color:var(--text-dim); margin:4px 0 0;">Organization-wide</p></div><div class="card"><div style="color:var(--green); font-weight:bold;">Unresolved Gaps</div><div style="font-size:20px; font-weight:900; margin-top:4px; color:#fff;">0</div><p style="font-size:10px; color:var(--text-dim); margin:4px 0 0;">Offboarding Issues</p></div></div><div class="card" style="width:100%; max-width:850px; margin-top:16px; text-align:center; border-color:var(--accent);"><span style="font-size:12px; color:var(--accent); font-weight:bold;">Primary Operational Target:</span><p style="font-size:12px; color:var(--text-dim); margin:4px 0 0;">Target: Reduce investigation time through centralized search, correlation, and automated evidence collection.</p></div></section>
+<section class="slide" data-index="18" data-note="MITRE ATT&CK is an industry framework that documents how real attackers operate. By mapping our detection rules to MITRE techniques, we know exactly which attacker behaviors we're detecting and where we may still have visibility gaps."><div class="brand-badge">Act 5 — Threat Framework</div><h2 class="slide-title">MITRE ATT&CK Framework Mapping</h2><p class="slide-subtitle">Standardizing detection logic against industry-recognized adversary techniques.</p><div class="grid-2"><div class="card"><h4 style="color:var(--accent); margin-top:0;">Mapped Detection Techniques</h4><div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11px; color:var(--text-dim);"><div>• Valid Accounts (T1078)</div><div>• Account Manipulation (T1098)</div><div>• Cloud Roles (T1098.003)</div><div>• Cloud Dashboards (T1538)</div><div>• Email Forwarding (T1114.003)</div><div>• Unsecured Credentials (T1552)</div><div>• Group Discovery (T1069)</div><div>• Impair Defenses (T1562.001)</div></div></div><div class="card" style="border-color:var(--purple);"><h4 style="color:var(--purple); margin-top:0;">Alert Context Example</h4><div style="font-size:12px; color:var(--text-dim); line-height:1.6;"><strong style="color:#fff;">Detection:</strong> Unexpected administrator-role assignment<br/><strong style="color:#fff;">MITRE ATT&CK:</strong> T1098 — Account Manipulation<br/><strong style="color:#fff;">Tactic:</strong> Persistence / Privilege Escalation<br/><strong style="color:#fff;">Impact Score:</strong> High</div></div></div></section>
+<section class="slide" data-index="19" data-note="NIST Cybersecurity Framework 2.0 provides a roadmap for managing cybersecurity. It organizes security into six functions—Govern, Identify, Protect, Detect, Respond, and Recover. Our platform supports each of these areas by providing visibility, monitoring, investigations, and reporting."><div class="brand-badge">Act 5 — Compliance & Governance</div><h2 class="slide-title">NIST CSF 2.0 Mapping</h2><p class="slide-subtitle">Comprehensive alignment across all six core functions of NIST CSF 2.0.</p><div class="grid-3"><div class="card"><h5 style="color:var(--accent); margin:0 0 4px;">1. Govern</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Policies, risk ownership, compliance reporting, and access rules.</p></div><div class="card"><h5 style="color:var(--accent); margin:0 0 4px;">2. Identify</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Asset inventory, user directory, SaaS applications, and risk register.</p></div><div class="card"><h5 style="color:var(--accent); margin:0 0 4px;">3. Protect</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">MFA checks, access controls, least privilege, and offboarding checks.</p></div><div class="card"><h5 style="color:var(--green); margin:0 0 4px;">4. Detect</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Log monitoring, detection rules, correlation, and anomaly alerts.</p></div><div class="card"><h5 style="color:var(--green); margin:0 0 4px;">5. Respond</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Incident workflows, containment guidance, and team notes.</p></div><div class="card"><h5 style="color:var(--green); margin:0 0 4px;">6. Recover</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Lessons learned, control improvements, and recovery tracking.</p></div></div></section>
+<section class="slide" data-index="20" data-note="Compliance is more than passing an audit. It helps organizations demonstrate that security controls are consistently being followed. This platform doesn't make PROJXON compliant on its own, but it collects the evidence, reports, and documentation needed to support audits and demonstrate good security practices."><div class="brand-badge">Act 5 — Audit Readiness</div><h2 class="slide-title">Governance & Compliance Evidence</h2><p class="slide-subtitle">Organizing, monitoring, and providing evidence for security controls.</p><div class="card" style="max-width:900px; width:100%; border-color:var(--purple);"><p style="font-size:13px; color:#fff; font-weight:600; margin:0 0 12px; text-align:center;">“The platform does not automatically make PROJXON compliant—it provides the tools and evidence to prove compliance.”</p><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12px; color:var(--text-dim);"><div>• Access-review evidence</div><div>• Offboarding documentation</div><div>• Account lifecycle records</div><div>• Detailed incident logs</div><div>• Risk register management</div><div>• Control ownership tracking</div><div>• Security metrics exports</div><div>• Management report generation</div></div></div></section>
+<section class="slide" data-index="21" data-note="In summary, building security early gives us a stronger posture, faster investigations, better visibility, clear audit evidence, and greater client trust."><div class="brand-badge">Act 6 — Strategic Value</div><h2 class="slide-title">Strategic Value for PROJXON</h2><p class="slide-subtitle">Building security early to support seamless growth and stakeholder trust.</p><div class="grid-2"><div class="card" style="border-color:var(--accent);"><h4 style="color:var(--accent); margin-top:0;">Operational Advantages</h4><ul style="font-size:12px; color:var(--text-dim); line-height:1.7; padding-left:16px; margin:0;"><li>Stronger security posture as PROJXON scales.</li><li>Faster and more organized investigations.</li><li>Complete visibility across users, access, and cloud activity.</li></ul></div><div class="card" style="border-color:var(--green);"><h4 style="color:var(--green); margin-top:0;">Commercial Advantages</h4><ul style="font-size:12px; color:var(--text-dim); line-height:1.7; padding-left:16px; margin:0;"><li>Clear evidence export for security and compliance reviews.</li><li>Greater trust with clients, auditors, and future partners.</li><li>Maximized ROI on existing technology stack.</li></ul></div></div></section>
+<section class="slide" data-index="22" data-note="We take a deliberate, four-phase approach, beginning with Google Workspace integration and extending over time to full correlation and AI assistance."><div class="brand-badge">Act 6 — Implementation</div><h2 class="slide-title">Phased Implementation Roadmap</h2><p class="slide-subtitle">A controlled, milestone-based rollout strategy.</p><div class="grid-4"><div class="card" style="border-color:var(--accent);"><h5 style="color:var(--accent); margin:0 0 6px;">Phase 1: Core Foundation</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Workspace ingestion, PostgreSQL setup, log search, Scorecard, basic rules.</p></div><div class="card"><h5 style="color:var(--purple); margin:0 0 6px;">Phase 2: Expanded Sources</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Orkavault & AWS CloudTrail log ingestion pipelines.</p></div><div class="card"><h5 style="color:var(--orange); margin:0 0 6px;">Phase 3: Correlation</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Cross-platform Correlation Engine and Risk Scoring.</p></div><div class="card"><h5 style="color:var(--green); margin:0 0 6px;">Phase 4: AI Support</h5><p style="font-size:11px; color:var(--text-dim); margin:0;">Analyst-reviewed AI assistance and automated playbook drafting.</p></div></div></section>
+<section class="slide" data-index="23" data-note="To move Phase 1 forward, I am seeking your feedback today and approval on prototype development, log access, and a technical point of contact."><div class="brand-badge">Executive Feedback</div><h2 class="slide-title">Feedback and Phase 1 Approval</h2><p class="slide-subtitle">Collaborative next steps to initiate Phase 1 development.</p><div class="card" style="max-width:850px; width:100%; border-color:var(--green);"><h4 style="color:var(--green); margin:0 0 16px; font-size:16px;">Requested Focus Areas for Approval</h4><div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:12px; color:var(--text-dim);"><div><strong style="color:#fff;">1. Directional Feedback:</strong> Feedback on proposed platform architecture and scope.</div><div><strong style="color:#fff;">2. Phase 1 Prototype:</strong> Approval to build Phase 1 prototype deliverables.</div><div><strong style="color:#fff;">3. Historical Data Access:</strong> Access to available historical security logs for baselining.</div><div><strong style="color:#fff;">4. Technical Contact:</strong> Designated point of contact for API access and integration questions.</div></div></div></section>
+<section class="slide" data-index="24" data-note="Thank you for your time and leadership. I welcome any questions or feedback on this proposal."><div class="brand-badge">Discussion</div><h2 class="slide-title" style="font-size: clamp(34px, 4vw, 54px);">Questions & Discussion</h2><p class="slide-subtitle" style="font-size: 18px; color: var(--accent); font-weight: 600; margin-top:20px;">“Building the foundation for PROJXON's security operations and governance.”</p><div style="margin-top:40px; font-size:13px; color:var(--text-dim);"><strong>Zainab Abdulhasan</strong> • Cybersecurity Specialist Intern • PROJXON</div></section>
+</main>
+<div id="chrome"><div><button class="chrome-btn" id="btnPrev">← Prev</button><button class="chrome-btn" id="btnNext">Next →</button></div><span id="slideCounter" style="font-size:12px; color:var(--text-dim);">Slide 1 of 24</span><div><button class="chrome-btn" id="btnFullscreen">Fullscreen [F]</button><button class="chrome-btn" id="btnNotes">Speaker Script</button></div></div>
+<div id="notesPanel"><h5 style="margin:0 0 6px; color:var(--accent);">Speaker Script</h5><p id="notesContent" style="font-size:12px; color:var(--text-dim); line-height:1.5; margin:0;"></p></div>
+<script>
+(function() {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progressBar = document.getElementById('progress-bar');
+  const slideCounter = document.getElementById('slideCounter');
+  const notesPanel = document.getElementById('notesPanel');
+  const notesContent = document.getElementById('notesContent');
+  let current = 0;
+  function updateSlide() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === current));
+    progressBar.style.width = ((current + 1) / slides.length * 100) + '%';
+    slideCounter.textContent = `Slide ${current + 1} of ${slides.length}`;
+    notesContent.textContent = slides[current].dataset.note || 'No speaker script for this slide.';
+  }
+  function nextSlide() { if (current < slides.length - 1) { current++; updateSlide(); } }
+  function prevSlide() { if (current > 0) { current--; updateSlide(); } }
+  document.getElementById('btnPrev').onclick = prevSlide;
+  document.getElementById('btnNext').onclick = nextSlide;
+  document.getElementById('btnNotes').onclick = () => notesPanel.classList.toggle('show');
+  document.getElementById('btnFullscreen').onclick = () => {
+    if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+    else { document.exitFullscreen(); }
+  };
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { nextSlide(); }
+    else if (e.key === 'ArrowLeft') { prevSlide(); }
+    else if (e.key === 'Home') { current = 0; updateSlide(); }
+    else if (e.key === 'End') { current = slides.length - 1; updateSlide(); }
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen(); }
+    }
+  });
+  updateSlide();
+})();
+</script>
+</body>
+</html>
